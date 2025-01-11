@@ -1,0 +1,52 @@
+{# templates/chatbot/chat.html #}
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+  <div class="content-wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Chat con Emil-IA</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-14 mx-auto">
+            <div class="card direct-chat direct-chat-primary">
+              <div class="card-header">
+                <h3 class="card-title" id="tu-asistente-virtual-de-contratación-pública">Tu asistente virtual de Contratación Pública</h3>
+              </div>
+
+              <div class="card-body">
+                <div id="chat-messages" class="direct-chat-messages" style="height: 400px;">
+                  <div class="direct-chat-msg">
+                    <div class="direct-chat-infos clearfix">
+                      <span class="direct-chat-name float-left">Emil-IA</span>
+                    </div>
+
+                    <div class="direct-chat-text">¡Hola! Soy Emil-IA, tu asistente virtual especializado en contratación estatal. ¿En qué puedo ayudarte hoy?</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                {% csrf_token %}
+                <div class="input-group">
+                  <button>Enviar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+{% endblock %}
+{% block extra_js %}
+
+{% endblock %}

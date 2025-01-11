@@ -71,7 +71,7 @@ class Contrato(models.Model):
     fecha_inicio_liquidacion = models.DateTimeField(null=True)
     fecha_fin_liquidacion = models.DateTimeField(null=True)
     objeto_del_contrato = models.TextField()
-    duracion_del_contrato = models.DateTimeField(null=True)
+    duracion_del_contrato = models.CharField(max_length=100, null=True, blank=True)
     nombre_del_banco = models.CharField(max_length=100, null=True, blank=True)
     tipo_de_cuenta = models.CharField(max_length=50, null=True, blank=True)
     numero_de_cuenta = models.CharField(max_length=50, null=True, blank=True)

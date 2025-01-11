@@ -1,0 +1,139 @@
+{% extends 'navbar.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Tabla de Contratos</h3>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="contratos-table" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        {% for column in columns %}
+                        <th data-field="{{ column.field }}">{{ column.title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contrato in contratos %}
+                    <tr>
+                        <td>{{ contrato.referencia_del_contrato }}</td>
+                        <td>{{ contrato.estado_contrato }}</td>
+                        <td>{{ contrato.modalidad_de_contratacion }}</td>
+                        <td>{{ contrato.duracion_del_contrato }}</td>
+                        <td>{{ contrato.fecha_de_firma|date:"d/m/Y" }}</td>
+                        <td>{{ contrato.fecha_de_inicio_del_contrato|date:"d/m/Y" }}</td>
+                        <td>{{ contrato.fecha_de_fin_del_contrato|date:"d/m/Y" }}</td>
+                        <td>{{ contrato.proveedor_adjudicado }}</td>
+                        <td>{{ contrato.valor_del_contrato }}</td>
+                        <td><a href="{{ contrato.url_proceso }}" target="_blank">Ver proceso</a></td>
+                        <td title="{{ contrato.objeto_del_contrato }}">
+                            {{ contrato.objeto_del_contrato|truncatewords:4 }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.7.0/css/colReorder.bootstrap5.min.css"/>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- DataTables Buttons -->
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#contratos-table').DataTable({
+        // Idioma en español
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+        },
+        // Botones de exportación y visibilidad de columnas
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copy',
+                text: 'Copiar',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'csv',
+                text: 'CSV',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'excel',
+                text: 'Excel',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'pdf',
+                text: 'PDF',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'print',
+                text: 'Imprimir',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'colvis',
+                text: 'Columnas',
+                className: 'btn btn-secondary'
+            }
+        ],
+        // Ordenamiento inicial por fecha de firma (columna 4) ascendente
+        order: [[4, 'asc']],
+        // Configuración para todas las columnas
+        columnDefs: [
+            {
+                targets: -1, // Última columna (objeto del contrato)
+                render: function(data, type, row) {
+                    if (type === 'display') {
+                        return '<span title="' + $(row).find('td:last').attr('title') + '">' + data + '</span>';
+                    }
+                    return data;
+                }
+            }
+        ],
+        // Permitir reordenar columnas
+        colReorder: true,
+        // Responsive
+        responsive: true,
+        // Scroll horizontal
+        scrollX: true,
+        // Mantener el estado de la tabla (columnas visibles, orden, etc.)
+        stateSave: true
+    });
+
+    // Inicializar tooltips de Bootstrap
+    $('[title]').tooltip();
+});
+</script>
+{% endblock %}
+{% endblock %}

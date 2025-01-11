@@ -107,7 +107,7 @@ def process_api_data(contratos_data):
             'fecha_inicio_liquidacion': parse_date(data.get('fecha_inicio_liquidacion')),
             'fecha_fin_liquidacion': parse_date(data.get('fecha_fin_liquidacion')),
             'objeto_del_contrato': data.get('objeto_del_contrato', ''),
-            'duracion_del_contrato': parse_date(data.get('duraci_n_del_contrato')),
+            'duracion_del_contrato': data.get('duraci_n_del_contrato', ''),
             'nombre_del_banco': data.get('nombre_del_banco', ''),
             'tipo_de_cuenta': data.get('tipo_de_cuenta', ''),
             'numero_de_cuenta': data.get('n_mero_de_cuenta', ''),

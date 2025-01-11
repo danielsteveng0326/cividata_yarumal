@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('1/', include('dashboard.urls')),  # Incluye las URLs de tu app
+    path('contratacion/', include('dashboard.urls')),  # Incluye las URLs de tu app
+    path('chat/', include('chatbot.urls')),  # Incluimos las URLs de chatbot
 ]

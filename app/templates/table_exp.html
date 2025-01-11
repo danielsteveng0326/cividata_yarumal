@@ -1,63 +1,64 @@
 {% extends 'navbar.html' %}
 
 {% block content %}
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Fixed Header Table</h3>
-
-            <div class="card-tools">
-              <div class="input-group input-group-sm" style="width: 150px;">
-                <input type="text" name="table_search" class="form-control float-right" placeholder="Search" />
-
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- /.card-header -->
-          <div class="card-body table-responsive p-0" style="height: 400px;">
-            <table class="table table-head-fixed text-nowrap">
-              <thead>
-                <tr>
-                  <th class="px-3 py-2 border-b text-left">Contrato N°</th>
-                  <th class="px-3 py-2 border-b text-left">URL</th>
-                  <th class="px-3 py-2 border-b text-left">Fecha Fin</th>
-                  <th class="px-3 py-2 border-b text-left">Contratista / Objeto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for contrato in expired_contract %}
-                  <tr>
-                    <td class="px-3 py-1 border-b">{{ contrato.referencia_del_contrato }}</td>
-                    <td class="px-3 py-1 border-b">
-                      <a href="{{ contrato.url_proceso }}" target="_blank" class="inline-block px-1 py-1 bg-blue-500 text-black rounded hover:bg-blue-600 transition-colors">Ver</a>
-                    </td>
-                    <td class="px-3 py-1 border-b">{{ contrato.fecha_de_fin_del_contrato|date:'d/m/Y' }}</td>
-                    <td class="px-3 py-1 border-b"> <!-- Ajusta el ancho de la columna -->
-                        <details class="max-w-xs"> <!-- Limita el ancho de los detalles -->
-                            <summary class="cursor-pointer">
-                                {{ contrato.proveedor_adjudicado|truncatechars:60 }}
-                            </summary>
-                            <div class="whitespace-pre-wrap">
-                                {{ contrato.objeto_del_contrato }}
-                            </div>
-                        </details>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <!-- /.card-body -->
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Contratos Próximos a Vencer</h1>
         </div>
-        <!-- /.card -->
       </div>
     </div>
-    <!-- /.row -->
-  </div>
-  <!-- /.container-fluid -->
+    <!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0" style="height: 435px;">
+              <table class="table table-head-fixed text-nowrap">
+                <thead>
+                  <tr>
+                    <th class="px-3 py-2 border-b text-left">Contrato N°</th>
+                    <th class="px-3 py-2 border-b text-left">URL</th>
+                    <th class="px-3 py-2 border-b text-left">Fecha Fin</th>
+                    <th class="px-3 py-2 border-b text-left">Contratista / Objeto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contrato in expired_contract %}
+                    <tr>
+                      <td class="px-3 py-1 border-b">{{ contrato.referencia_del_contrato }}</td>
+                      <td class="px-3 py-1 border-b">
+                        <a href="{{ contrato.url_proceso }}" target="_blank" class="inline-block px-1 py-1 bg-blue-500 text-black rounded hover:bg-blue-600 transition-colors">Ver</a>
+                      </td>
+                      <td class="px-3 py-1 border-b">{{ contrato.fecha_de_fin_del_contrato|date:'d/m/Y' }}</td>
+                      <td class="px-3 py-1 border-b">
+                        <!-- Ajusta el ancho de la columna -->
+                        <details class="max-w-xs">
+                          <!-- Limita el ancho de los detalles -->
+                          <summary class="cursor-pointer">{{ contrato.proveedor_adjudicado|truncatechars:60 }}</summary>
+                          <div class="whitespace-pre-wrap">{{ contrato.objeto_del_contrato }}</div>
+                        </details>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
 {% endblock %}
