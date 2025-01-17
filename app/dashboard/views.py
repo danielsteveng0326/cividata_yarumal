@@ -19,13 +19,13 @@ def home(request):
 
 def dashboard(request):
     # Datos existentes
-    suma_valor_del_contrato = Contrato.objects.aggregate(Sum('valor_del_contrato'))['valor_del_contrato__sum']
-    numero_de_registros = Contrato.objects.count()
-    numero_de_proveedores = Contrato.objects.values('documento_proveedor').distinct().count()
+    suma_valor_del_contrato = Contrato.objects.filter(codigo_entidad='727001372').aggregate(Sum('valor_del_contrato'))['valor_del_contrato__sum']
+    numero_de_registros = Contrato.objects.filter(codigo_entidad='727001372').count()
+    numero_de_proveedores = Contrato.objects.filter(codigo_entidad='727001372').values('documento_proveedor').distinct().count()
     suma_valor_del_contrato = suma_valor_del_contrato//1000000
     
     # Consulta para obtener el número de contratos por mes
-    contratos_por_mes = Contrato.objects.annotate(
+    contratos_por_mes = Contrato.objects.filter(codigo_entidad='727001372').annotate(
         mes=TruncMonth('fecha_de_firma')
     ).values('mes').annotate(
         total=Count('id')
@@ -41,7 +41,7 @@ def dashboard(request):
             data.append(item['total'])
 
     # Obtener la suma de valores por mes
-    valores_por_mes = Contrato.objects.annotate(
+    valores_por_mes = Contrato.objects.filter(codigo_entidad='727001372').annotate(
         mes=TruncMonth('fecha_de_firma')
     ).values('mes').annotate(
         total_valor=Sum('valor_del_contrato')  # Sumamos los valores
@@ -76,11 +76,25 @@ def expired(request):
     
     # Filtra los contratos que aún no han vencido
     expired_contract = Contrato.objects.filter(
-        fecha_de_fin_del_contrato__gte=fecha_actual
+        fecha_de_fin_del_contrato__gte=fecha_actual,
+        codigo_entidad='727001372'
     ).order_by('fecha_de_fin_del_contrato')
     
     # Renderiza el template con el contexto
     return render(request, 'table_exp.html', {"expired_contract" : expired_contract})
+
+def expirededur(request):
+    
+    fecha_actual = timezone.now() - timedelta(days=2)
+    
+    # Filtra los contratos que aún no han vencido
+    expired_contract2 = Contrato.objects.filter(
+        fecha_de_fin_del_contrato__gte=fecha_actual,
+        documento_proveedor = '901831522'
+    ).order_by('fecha_de_fin_del_contrato')
+    
+    # Renderiza el template con el contexto
+    return render(request, 'table_expedur.html', {"expired_contract2" : expired_contract2})
 
 def api(request):
     # Obtener datos de la API
@@ -120,7 +134,7 @@ class ContratoListView(ListView):
     def get_queryset(self):
         # Ordenar por fecha_de_firma de forma ascendente
         # Usando Coalesce para manejar fechas NULL
-        return Contrato.objects.annotate(
+        return Contrato.objects.filter(codigo_entidad='727001372').annotate(
             fecha_orden=Coalesce('fecha_de_firma', Value(datetime.max))
         ).order_by('fecha_orden')
 
