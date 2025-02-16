@@ -179,8 +179,8 @@
   <aside class="main-sidebar main-sidebar-custom sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="../../index3.html" class="brand-link">
-      <img src="{% static 'lib/adminlt320/dist/img/logo.png' %}" alt="Logo" class="brand-image elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">EDENORTE</span>
+      <img src="{% static 'lib/adminlt320/dist/img/logoyar.png' %}" alt="Logo" class="brand-image elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">Municipio de Yarumal</span>
     </a>
 
     <!-- Sidebar -->
@@ -224,17 +224,18 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href={% url 'expirededur' %} class="nav-link">
+                <a href={% url 'expired' %} class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Vencimientos EDUR</p>
+                  <p>Vencimientos Contratos</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href={% url 'expired' %} class="nav-link">
+                <a href={% url 'expirededur' %} class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Vencimientos</p>
+                  <p>Vencimientos Edenorte</p>
                 </a>
               </li>
+
               <li class="nav-item">
                 <a href={% url 'contratos_list' %} class="nav-link">
                   <i class="far fa-circle nav-icon"></i>

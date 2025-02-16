@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     #MyApps
     'contratos',
     'dashboard',
+    'login',
 ]
 
 MIDDLEWARE = [

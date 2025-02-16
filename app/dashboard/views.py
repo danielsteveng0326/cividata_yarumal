@@ -14,18 +14,28 @@ from django.db.models import Value
 from datetime import datetime
 import json
 
+#poner el id de la entidad
+#edenorte = 727001372   #nit = 901831522
+#municipio de yarumal = 704278142
+#concejo de yarumal = 724167465
+
+
+codigo_ent = 704278142
+annoinicial=2025
+annofinal=2025
+
 def home(request):
     return render(request, 'navbar.html', {})
 
 def dashboard(request):
     # Datos existentes
-    suma_valor_del_contrato = Contrato.objects.filter(codigo_entidad='727001372').aggregate(Sum('valor_del_contrato'))['valor_del_contrato__sum']
-    numero_de_registros = Contrato.objects.filter(codigo_entidad='727001372').count()
-    numero_de_proveedores = Contrato.objects.filter(codigo_entidad='727001372').values('documento_proveedor').distinct().count()
+    suma_valor_del_contrato = Contrato.objects.filter(codigo_entidad=codigo_ent, fecha_de_firma__range=(datetime(annoinicial, 1, 1), datetime(annofinal, 12, 31, 23, 59, 59))).aggregate(Sum('valor_del_contrato'))['valor_del_contrato__sum']
+    numero_de_registros = Contrato.objects.filter(codigo_entidad=codigo_ent, fecha_de_firma__range=(datetime(annoinicial, 1, 1), datetime(annofinal, 12, 31, 23, 59, 59))).count()
+    numero_de_proveedores = Contrato.objects.filter(codigo_entidad=codigo_ent, fecha_de_firma__range=(datetime(annoinicial, 1, 1), datetime(annofinal, 12, 31, 23, 59, 59))).values('documento_proveedor').distinct().count()
     suma_valor_del_contrato = suma_valor_del_contrato//1000000
     
     # Consulta para obtener el número de contratos por mes
-    contratos_por_mes = Contrato.objects.filter(codigo_entidad='727001372').annotate(
+    contratos_por_mes = Contrato.objects.filter(codigo_entidad=codigo_ent).annotate(
         mes=TruncMonth('fecha_de_firma')
     ).values('mes').annotate(
         total=Count('id')
@@ -41,7 +51,7 @@ def dashboard(request):
             data.append(item['total'])
 
     # Obtener la suma de valores por mes
-    valores_por_mes = Contrato.objects.filter(codigo_entidad='727001372').annotate(
+    valores_por_mes = Contrato.objects.filter(codigo_entidad=codigo_ent).annotate(
         mes=TruncMonth('fecha_de_firma')
     ).values('mes').annotate(
         total_valor=Sum('valor_del_contrato')  # Sumamos los valores
@@ -77,7 +87,7 @@ def expired(request):
     # Filtra los contratos que aún no han vencido
     expired_contract = Contrato.objects.filter(
         fecha_de_fin_del_contrato__gte=fecha_actual,
-        codigo_entidad='727001372'
+        codigo_entidad=codigo_ent
     ).order_by('fecha_de_fin_del_contrato')
     
     # Renderiza el template con el contexto
@@ -134,7 +144,7 @@ class ContratoListView(ListView):
     def get_queryset(self):
         # Ordenar por fecha_de_firma de forma ascendente
         # Usando Coalesce para manejar fechas NULL
-        return Contrato.objects.filter(codigo_entidad='727001372').annotate(
+        return Contrato.objects.filter(codigo_entidad=codigo_ent, fecha_de_firma__range=(datetime(annoinicial, 1, 1), datetime(annofinal, 12, 31, 23, 59, 59))).annotate(
             fecha_orden=Coalesce('fecha_de_firma', Value(datetime.max))
         ).order_by('fecha_orden')
 

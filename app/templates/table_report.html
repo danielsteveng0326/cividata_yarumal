@@ -67,73 +67,61 @@
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#contratos-table').DataTable({
-        // Idioma en español
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-        },
-        // Botones de exportación y visibilidad de columnas
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'copy',
-                text: 'Copiar',
-                className: 'btn btn-secondary'
+    $(document).ready(function() {
+        $('#contratos-table').DataTable({
+            // Idioma en español
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
             },
-            {
-                extend: 'csv',
-                text: 'CSV',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'excel',
-                text: 'Excel',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'pdf',
-                text: 'PDF',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'print',
-                text: 'Imprimir',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'colvis',
-                text: 'Columnas',
-                className: 'btn btn-secondary'
-            }
-        ],
-        // Ordenamiento inicial por fecha de firma (columna 4) ascendente
-        order: [[4, 'asc']],
-        // Configuración para todas las columnas
-        columnDefs: [
-            {
-                targets: -1, // Última columna (objeto del contrato)
-                render: function(data, type, row) {
-                    if (type === 'display') {
-                        return '<span title="' + $(row).find('td:last').attr('title') + '">' + data + '</span>';
-                    }
-                    return data;
+            // Botones de exportación y visibilidad de columnas
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copiar',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'colvis',
+                    text: 'Columnas',
+                    className: 'btn btn-secondary'
                 }
-            }
-        ],
-        // Permitir reordenar columnas
-        colReorder: true,
-        // Responsive
-        responsive: true,
-        // Scroll horizontal
-        scrollX: true,
-        // Mantener el estado de la tabla (columnas visibles, orden, etc.)
-        stateSave: true
-    });
-
-    // Inicializar tooltips de Bootstrap
-    $('[title]').tooltip();
-});
+            ],
+            // Evita que DataTables ordene automáticamente
+            order: [],
+            // Permitir reordenar columnas
+            colReorder: true,
+            // Responsive
+            responsive: true,
+            // Scroll horizontal
+            scrollX: true,
+            // Mantener el estado de la tabla (columnas visibles, orden, etc.)
+            stateSave: true
+        });
+    
+        // Inicializar tooltips de Bootstrap
+        $('[title]').tooltip();
+    });    
 </script>
 {% endblock %}
 {% endblock %}
