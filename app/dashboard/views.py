@@ -2,17 +2,19 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from .models import Contrato
-from django.db.models import Sum, Count
-from django.db.models.functions import ExtractMonth
-from django.http import JsonResponse
+from django.db.models import Sum, Count, Q
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.http import JsonResponse, HttpResponse
 from .db import process_api_data
 from .utils import api_consulta
 from django.db.models.functions import Coalesce
 from django.db.models import Value
-from datetime import datetime
 import json
+import csv
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 
 #poner el id de la entidad
 #edenorte = 727001372   #nit = 901831522
@@ -211,35 +213,74 @@ def consulta(request):
     db_list = Contrato.objects.all()
     return render(request, 'dashboard.html', {"db_list":db_list})
 
-
 class ContratoListView(ListView):
     model = Contrato
     template_name = 'table_report.html'
     context_object_name = 'contratos'
 
     def get_queryset(self):
-        # Ordenar por fecha_de_firma de forma ascendente
-        # Usando Coalesce para manejar fechas NULL
-        return Contrato.objects.filter(codigo_entidad=codigo_ent, fecha_de_firma__range=(datetime(annoinicial, 1, 1), datetime(annofinal, 12, 31, 23, 59, 59))).annotate(
-            fecha_orden=Coalesce('fecha_de_firma', Value(datetime.max))
-        ).order_by('fecha_orden')
+        # Obtener parámetros de filtro desde GET y POST
+        ano_filtro = self.request.GET.get('ano', '') or self.request.POST.get('ano', '')
+        modalidad_filtro = self.request.GET.get('modalidad', '') or self.request.POST.get('modalidad', '')
+        busqueda_filtro = self.request.GET.get('busqueda', '') or self.request.POST.get('busqueda', '')
+        
+        # Query base - solo contratos del municipio
+        queryset = Contrato.objects.filter(codigo_entidad=codigo_ent)
+        
+        # Aplicar filtro de año si se especifica
+        if ano_filtro:
+            try:
+                ano = int(ano_filtro)
+                queryset = queryset.filter(fecha_de_firma__year=ano)
+            except (ValueError, TypeError):
+                pass
+        
+        # Aplicar filtro de modalidad si se especifica
+        if modalidad_filtro:
+            queryset = queryset.filter(modalidad_de_contratacion__icontains=modalidad_filtro)
+        
+        # Aplicar búsqueda general si se especifica
+        if busqueda_filtro:
+            queryset = queryset.filter(
+                Q(referencia_del_contrato__icontains=busqueda_filtro) |
+                Q(id_contrato__icontains=busqueda_filtro) |
+                Q(proveedor_adjudicado__icontains=busqueda_filtro) |
+                Q(objeto_del_contrato__icontains=busqueda_filtro) |
+                Q(estado_contrato__icontains=busqueda_filtro) |
+                Q(modalidad_de_contratacion__icontains=busqueda_filtro) |
+                Q(tipo_de_contrato__icontains=busqueda_filtro) |
+                Q(nombre_ordenador_del_gasto__icontains=busqueda_filtro)
+            )
+        
+        # Ordenar por fecha de firma descendente, manejando valores nulos
+        return queryset.annotate(
+            fecha_orden=Coalesce('fecha_de_firma', Value(datetime.min))
+        ).order_by('-fecha_orden')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['columns'] = [
-            {'field': 'referencia_del_contrato', 'title': 'Referencia del Contrato'},
-            {'field': 'estado_contrato', 'title': 'Estado'},
-            {'field': 'modalidad_de_contratacion', 'title': 'Modalidad de Contratación'},
-            {'field': 'duracion_del_contrato', 'title': 'Duración'},
-            {'field': 'fecha_de_firma', 'title': 'Fecha de Firma'},
-            {'field': 'fecha_de_inicio_del_contrato', 'title': 'Fecha de Inicio'},
-            {'field': 'fecha_de_fin_del_contrato', 'title': 'Fecha de Fin'},
-            {'field': 'proveedor_adjudicado', 'title': 'Proveedor'},
-            {'field': 'valor_del_contrato', 'title': 'Valor'},
-            {'field': 'url_proceso', 'title': 'URL Proceso'},
-            {'field': 'objeto_del_contrato', 'title': 'Objeto del Contrato'}
-        ]
+        
+        # Agregar información adicional al contexto
+        context['now'] = timezone.now()
+        context['total_contratos'] = self.get_queryset().count()
+        
+        # Información de filtros aplicados
+        context['ano_filtro'] = self.request.GET.get('ano', '') or self.request.POST.get('ano', '')
+        context['modalidad_filtro'] = self.request.GET.get('modalidad', '') or self.request.POST.get('modalidad', '')
+        context['busqueda_filtro'] = self.request.GET.get('busqueda', '') or self.request.POST.get('busqueda', '')
+        
+        # Obtener todas las modalidades únicas para llenar el select
+        modalidades_disponibles = Contrato.objects.filter(
+            codigo_entidad=codigo_ent
+        ).values_list('modalidad_de_contratacion', flat=True).distinct().order_by('modalidad_de_contratacion')
+        
+        context['modalidades_disponibles'] = [m for m in modalidades_disponibles if m]
+        
         return context
-    
+
+    def post(self, request, *args, **kwargs):
+        """Manejar POST requests para filtros"""
+        return self.get(request, *args, **kwargs)
+
 def emilia(request):
     return render(request, '', {})

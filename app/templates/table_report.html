@@ -2,126 +2,395 @@
 {% load static %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Tabla de Contratos</h3>
+<!-- Content Header -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1><i class="fas fa-table text-primary mr-2"></i>Reportes de Contratos</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/contratacion/">Inicio</a></li>
+          <li class="breadcrumb-item active">Reportes</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    
+    <!-- Filtros -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-filter mr-2"></i>Filtros de Búsqueda
+            </h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <form method="GET" action="{% url 'contratos_list' %}" id="filtros-form">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="busqueda">Búsqueda General:</label>
+                    <input type="text" class="form-control" name="busqueda" id="busqueda" 
+                           value="{{ busqueda_filtro }}" 
+                           placeholder="Buscar en ID, objeto, proveedor, etc...">
+                    <small class="form-text text-muted">Busca en todas las columnas de la tabla</small>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="ano">Año de Firma:</label>
+                    <select class="form-control" name="ano" id="ano">
+                      <option value="">Todos los años</option>
+                      <option value="2024" {% if ano_filtro == '2024' %}selected{% endif %}>2024</option>
+                      <option value="2025" {% if ano_filtro == '2025' %}selected{% endif %}>2025</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="modalidad">Modalidad:</label>
+                    <select class="form-control" name="modalidad" id="modalidad">
+                      <option value="">Todas las modalidades</option>
+                      {% for modalidad in modalidades_disponibles %}
+                        <option value="{{ modalidad }}" {% if modalidad_filtro == modalidad %}selected{% endif %}>
+                          {{ modalidad }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div>
+                      <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-search mr-1"></i>Filtrar
+                      </button>
+                      <a href="{% url 'contratos_list' %}" class="btn btn-secondary btn-block mt-2">
+                        <i class="fas fa-eraser mr-1"></i>Limpiar
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="card-body">
-        <div class="table-responsive">
-            <table id="contratos-table" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        {% for column in columns %}
-                        <th data-field="{{ column.field }}">{{ column.title }}</th>
-                        {% endfor %}
-                    </tr>
+    <!-- Información de filtros aplicados -->
+    {% if ano_filtro or modalidad_filtro or busqueda_filtro %}
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="alert alert-info">
+          <h5><i class="fas fa-info-circle mr-2"></i>Filtros aplicados:</h5>
+          <ul class="mb-0">
+            {% if ano_filtro %}
+              <li><strong>Año:</strong> {{ ano_filtro }}</li>
+            {% endif %}
+            {% if modalidad_filtro %}
+              <li><strong>Modalidad:</strong> {{ modalidad_filtro }}</li>
+            {% endif %}
+            {% if busqueda_filtro %}
+              <li><strong>Búsqueda:</strong> "{{ busqueda_filtro }}"</li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Tabla Principal -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-list mr-2"></i>
+              Lista de Contratos
+              {% if total_contratos %}
+                <span class="badge badge-primary ml-2">{{ total_contratos }} registro{{ total_contratos|pluralize }}</span>
+              {% endif %}
+            </h3>
+            <div class="card-tools">
+              <!-- Controles de exportación -->
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-success dropdown-toggle" data-toggle="dropdown">
+                  <i class="fas fa-download mr-1"></i>Exportar
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <a class="dropdown-item" href="#" id="export-excel">
+                    <i class="fas fa-file-excel text-success mr-2"></i>Excel
+                  </a>
+                  <a class="dropdown-item" href="#" id="export-csv">
+                    <i class="fas fa-file-csv text-info mr-2"></i>CSV
+                  </a>
+                  <a class="dropdown-item" href="#" id="export-pdf">
+                    <i class="fas fa-file-pdf text-danger mr-2"></i>PDF
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" id="export-print">
+                    <i class="fas fa-print text-dark mr-2"></i>Imprimir
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table id="contratos-table" class="table table-striped table-hover table-sm">
+                <thead class="thead-dark">
+                  <tr>
+                    <th>Referencia</th>
+                    <th>Estado</th>
+                    <th>Modalidad</th>
+                    <th>Duración</th>
+                    <th>Fecha Firma</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Proveedor</th>
+                    <th>Valor</th>
+                    <th>URL</th>
+                    <th>Objeto</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    {% for contrato in contratos %}
-                    <tr>
-                        <td>{{ contrato.referencia_del_contrato }}</td>
-                        <td>{{ contrato.estado_contrato }}</td>
-                        <td>{{ contrato.modalidad_de_contratacion }}</td>
-                        <td>{{ contrato.duracion_del_contrato }}</td>
-                        <td>{{ contrato.fecha_de_firma|date:"d/m/Y" }}</td>
-                        <td>{{ contrato.fecha_de_inicio_del_contrato|date:"d/m/Y" }}</td>
-                        <td>{{ contrato.fecha_de_fin_del_contrato|date:"d/m/Y" }}</td>
-                        <td>{{ contrato.proveedor_adjudicado }}</td>
-                        <td>{{ contrato.valor_del_contrato }}</td>
-                        <td><a href="{{ contrato.url_proceso }}" target="_blank">Ver proceso</a></td>
-                        <td title="{{ contrato.objeto_del_contrato }}">
-                            {{ contrato.objeto_del_contrato|truncatewords:4 }}
-                        </td>
-                    </tr>
-                    {% endfor %}
+                  {% for contrato in contratos %}
+                  <tr>
+                    <td>{{ contrato.referencia_del_contrato }}</td>
+                    <td>
+                      <span class="badge {% if contrato.estado_contrato == 'Liquidado' %}badge-success{% elif contrato.estado_contrato == 'Celebrado' %}badge-primary{% elif contrato.estado_contrato == 'Terminado' %}badge-secondary{% else %}badge-warning{% endif %}">
+                        {{ contrato.estado_contrato }}
+                      </span>
+                    </td>
+                    <td>{{ contrato.modalidad_de_contratacion }}</td>
+                    <td>{{ contrato.duracion_del_contrato|default:"N/A" }}</td>
+                    <td>{{ contrato.fecha_de_firma|date:"d/m/Y"|default:"N/A" }}</td>
+                    <td>{{ contrato.fecha_de_inicio_del_contrato|date:"d/m/Y"|default:"N/A" }}</td>
+                    <td>{{ contrato.fecha_de_fin_del_contrato|date:"d/m/Y"|default:"N/A" }}</td>
+                    <td title="{{ contrato.proveedor_adjudicado }}">
+                      {{ contrato.proveedor_adjudicado|truncatechars:30 }}
+                    </td>
+                    <td class="text-right">
+                      ${{ contrato.valor_del_contrato|floatformat:0 }}
+                    </td>
+                    <td>
+                      <a href="{{ contrato.url_proceso }}" target="_blank" class="btn btn-xs btn-outline-primary" title="Ver en SECOP">
+                        <i class="fas fa-external-link-alt"></i>
+                      </a>
+                    </td>
+                    <td title="{{ contrato.objeto_del_contrato }}">
+                      {{ contrato.objeto_del_contrato|truncatechars:50 }}
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="11" class="text-center text-muted py-4">
+                      <i class="fas fa-inbox fa-2x mb-2"></i>
+                      <br>No se encontraron contratos con los filtros aplicados
+                      {% if ano_filtro or modalidad_filtro or busqueda_filtro %}
+                        <br><a href="{% url 'contratos_list' %}" class="btn btn-sm btn-outline-primary mt-2">Ver todos los contratos</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
                 </tbody>
-            </table>
+              </table>
+            </div>
+          </div>
+
+          <!-- Footer con información -->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="dataTables_info" id="info-registros">
+                  <!-- Se actualiza dinámicamente -->
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+                <small class="text-muted">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  Última actualización: {{ now|date:"d/m/Y H:i" }}
+                </small>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
-{% block extra_css %}
-<!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.7.0/css/colReorder.bootstrap5.min.css"/>
-{% endblock %}
-
-{% block extra_js %}
-<!-- jQuery -->
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
-<!-- DataTables JS -->
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
-<!-- DataTables Buttons -->
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+    
+  </div>
+</section>
 
 <script>
-    $(document).ready(function() {
-        $('#contratos-table').DataTable({
-            // Idioma en español
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+$(document).ready(function() {
+    // Inicializar DataTable con configuración simple
+    var table = $('#contratos-table').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+        },
+        dom: 'Blfrtip',
+        buttons: [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy mr-1"></i>Copiar',
+                className: 'btn btn-sm btn-outline-secondary d-none'
             },
-            // Botones de exportación y visibilidad de columnas
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    extend: 'copy',
-                    text: 'Copiar',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'csv',
-                    text: 'CSV',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'pdf',
-                    text: 'PDF',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'print',
-                    text: 'Imprimir',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'colvis',
-                    text: 'Columnas',
-                    className: 'btn btn-secondary'
-                }
-            ],
-            // Evita que DataTables ordene automáticamente
-            order: [],
-            // Permitir reordenar columnas
-            colReorder: true,
-            // Responsive
-            responsive: true,
-            // Scroll horizontal
-            scrollX: true,
-            // Mantener el estado de la tabla (columnas visibles, orden, etc.)
-            stateSave: true
-        });
+            {
+                extend: 'csv',
+                text: '<i class="fas fa-file-csv mr-1"></i>CSV',
+                className: 'btn btn-sm btn-outline-info d-none'
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel mr-1"></i>Excel',
+                className: 'btn btn-sm btn-outline-success d-none'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf mr-1"></i>PDF',
+                className: 'btn btn-sm btn-outline-danger d-none',
+                orientation: 'landscape',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print mr-1"></i>Imprimir',
+                className: 'btn btn-sm btn-outline-dark d-none'
+            },
+            {
+                extend: 'colvis',
+                text: '<i class="fas fa-columns mr-1"></i>Columnas',
+                className: 'btn btn-sm btn-outline-secondary'
+            }
+        ],
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[4, 'desc']], // Ordenar por fecha de firma descendente
+        responsive: true,
+        scrollX: true,
+        stateSave: false,
+        columnDefs: [
+            { targets: [8], className: 'text-right' }, // Valor del contrato
+            { targets: [9], orderable: false }, // URL no ordenable
+            { targets: [10], orderable: false } // Objeto no ordenable
+        ],
+        drawCallback: function(settings) {
+            // Actualizar información de registros
+            var api = this.api();
+            var info = api.page.info();
+            $('#info-registros').html(
+                'Mostrando ' + (info.start + 1) + ' a ' + info.end + 
+                ' de ' + info.recordsDisplay + ' registros' + 
+                (info.recordsTotal !== info.recordsDisplay ? 
+                    ' (filtrados de ' + info.recordsTotal + ' registros totales)' : '')
+            );
+        }
+    });
+
+    // Auto-submit del formulario cuando cambian los selects
+    $('#ano, #modalidad').on('change', function() {
+        $('#filtros-form').submit();
+    });
+
+    // Submit del formulario al presionar Enter en el campo de búsqueda
+    $('#busqueda').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            $('#filtros-form').submit();
+        }
+    });
+
+    // Exportaciones manuales
+    $('#export-excel').click(function(e) {
+        e.preventDefault();
+        table.button('.buttons-excel').trigger();
+    });
     
-        // Inicializar tooltips de Bootstrap
-        $('[title]').tooltip();
-    });    
+    $('#export-csv').click(function(e) {
+        e.preventDefault();
+        table.button('.buttons-csv').trigger();
+    });
+    
+    $('#export-pdf').click(function(e) {
+        e.preventDefault();
+        table.button('.buttons-pdf').trigger();
+    });
+    
+    $('#export-print').click(function(e) {
+        e.preventDefault();
+        table.button('.buttons-print').trigger();
+    });
+
+    // Tooltips
+    $('[title]').tooltip();
+});
 </script>
-{% endblock %}
+
+<style>
+.table-sm td, .table-sm th {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.btn-xs {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.75rem;
+}
+
+.dataTables_wrapper .dataTables_length {
+    float: left;
+    margin-bottom: 1rem;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    display: none; /* Ocultamos el buscador por defecto */
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    float: right;
+    margin-top: 0;
+}
+
+.table-responsive {
+    border: none;
+}
+
+.card-tools .btn-group {
+    margin-left: 0.5rem;
+}
+
+/* Estilos para paginación */
+.dataTables_wrapper .dataTables_info {
+    padding-top: 0.75rem;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    width: auto;
+    display: inline-block;
+}
+
+/* Ocultar botones de DataTables por defecto */
+.dt-buttons {
+    display: none;
+}
+</style>
 {% endblock %}
