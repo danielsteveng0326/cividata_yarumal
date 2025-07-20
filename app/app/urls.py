@@ -37,7 +37,7 @@ def custom_400(request, exception):
 
 urlpatterns = [
     # Redirect automático desde la raíz a /contratacion/
-    path('', RedirectView.as_view(url='/contratacion/', permanent=True)),
+    path('', RedirectView.as_view(url='/contratacion/index/', permanent=True)),
     
     # URLs principales
     path('admin/', admin.site.urls),
