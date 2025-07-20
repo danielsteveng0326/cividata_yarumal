@@ -10,4 +10,7 @@ urlpatterns = [
     path('report/', ContratoListView.as_view(), name='contratos_list'),
     path('api/', views.api, name = "api"),
     path('emilia/', views.emilia, name = "emilia"),
+    path('', views.debug_view, name="debug"),
+    path('debug/', views.debug_view, name="debug_page"),
+    path('api/', views.api, name="api"),
 ]

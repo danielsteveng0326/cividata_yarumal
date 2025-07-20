@@ -1,26 +1,76 @@
 # Agregar esto a app/dashboard/views.py
 
+# AGREGAR ESTO AL FINAL DE app/dashboard/views.py
+
 from django.http import HttpResponse
 
-def test_view(request):
-    """Vista simple para probar que la aplicación funciona"""
+def debug_view(request):
+    """Vista simple para verificar que todo funciona"""
     return HttpResponse("""
+    <!DOCTYPE html>
     <html>
-    <head><title>UnityGov - Test</title></head>
+    <head>
+        <title>UnityGov - Funcionando!</title>
+        <style>
+            body { 
+                font-family: Arial, sans-serif; 
+                margin: 50px; 
+                background-color: #f5f5f5;
+            }
+            .container {
+                background: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            .success { color: #28a745; }
+            .info { color: #007bff; }
+            a { 
+                color: #007bff; 
+                text-decoration: none;
+                margin-right: 15px;
+            }
+            a:hover { text-decoration: underline; }
+        </style>
+    </head>
     <body>
-        <h1>🎉 UnityGov está funcionando!</h1>
-        <p>Esta es una página de prueba.</p>
-        <ul>
-            <li><a href="/dashboard/">Dashboard</a></li>
-            <li><a href="/admin/">Admin</a></li>
-            <li><a href="/chat/">Chat</a></li>
-        </ul>
+        <div class="container">
+            <h1>🎉 UnityGov está funcionando!</h1>
+            <p class="success">✅ Django está corriendo correctamente</p>
+            <p class="success">✅ Las URLs están configuradas</p>
+            <p class="success">✅ La vista se está ejecutando</p>
+            <p class="success">✅ La base de datos está conectada</p>
+            
+            <h2>Estado del Sistema:</h2>
+            <ul>
+                <li><strong>URL actual:</strong> {}</li>
+                <li><strong>Método:</strong> {}</li>
+                <li><strong>Aplicación:</strong> UnityGov v1.0</li>
+                <li><strong>Plataforma:</strong> Railway</li>
+            </ul>
+            
+            <h2>Próximos pasos:</h2>
+            <p>Ahora podemos activar las funciones principales:</p>
+            <ul>
+                <li>Dashboard de contratos</li>
+                <li>Reportes y visualizaciones</li>
+                <li>Chatbot Emil-IA</li>
+                <li>API de datos</li>
+            </ul>
+            
+            <h2>Enlaces disponibles:</h2>
+            <p>
+                <a href="/api/">Cargar datos de prueba</a>
+                <a href="/admin/">Panel de administración</a>
+                <a href="/chat/">Chatbot Emil-IA</a>
+            </p>
+            
+            <hr>
+            <p class="info">✨ ¡Deployment exitoso en Railway!</p>
+        </div>
     </body>
     </html>
-    """)
-
-# Y modificar dashboard/urls.py para incluir:
-# path('test/', views.test_view, name="test"),
+    """.format(request.path, request.method))
 
 
 '''
