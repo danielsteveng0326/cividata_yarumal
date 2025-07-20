@@ -1,23 +1,13 @@
 from django.urls import path
-from django.http import HttpResponse
-
-def temp_view(request):
-    return HttpResponse("""
-    <html>
-    <head><title>UnityGov - Funcionando</title></head>
-    <body style="font-family: Arial; padding: 50px;">
-        <h1>🎉 UnityGov está funcionando!</h1>
-        <p>✅ Django está corriendo</p>
-        <p>✅ URLs configuradas</p>
-        <p>✅ Base de datos conectada</p>
-        <p>✅ Deploy exitoso en Railway</p>
-        <h2>Enlaces:</h2>
-        <p><a href="/admin/">Admin</a></p>
-        <p><em>Sistema inicializado correctamente.</em></p>
-    </body>
-    </html>
-    """)
+from . import views
+from .views import ContratoListView
 
 urlpatterns = [
-    path('', temp_view, name="home"),
+    path('', views.dashboard, name="dashboard"),
+    path('dashboard/', views.dashboard, name="dashboard"),
+    path('expired/', views.expired, name="expired"),
+    path('expired-edur/', views.expirededur, name="expirededur"),
+    path('report/', ContratoListView.as_view(), name='contratos_list'),
+    path('api/', views.api, name = "api"),
+    path('emilia/', views.emilia, name = "emilia"),
 ]
