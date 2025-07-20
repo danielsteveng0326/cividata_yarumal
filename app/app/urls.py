@@ -14,11 +14,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView
 
 # Vistas de error personalizadas
 def custom_404(request, exception):
@@ -37,12 +35,15 @@ def custom_400(request, exception):
     from django.shortcuts import render
     return render(request, 'error.html', status=400)
 
-
 urlpatterns = [
-    path('', include('dashboard.urls')),
+    # Redirect automático desde la raíz a /contratacion/
+    path('', RedirectView.as_view(url='/contratacion/', permanent=True)),
+    
+    # URLs principales
     path('admin/', admin.site.urls),
-    path('contratacion/', include('dashboard.urls')),
-    path('chat/', include('chatbot.urls')),
+    path('contratacion/', include('dashboard.urls')),  # Todas las funcionalidades bajo /contratacion/
+    path('chat/', include('chatbot.urls')),  # Chatbot accesible desde /chat/
+    #path('login/', include('login.urls')),  # Login si lo activas en el futuro
 ]
 
 # Manejo de errores
