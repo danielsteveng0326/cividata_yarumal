@@ -1,3 +1,30 @@
+# Agregar esto a app/dashboard/views.py
+
+from django.http import HttpResponse
+
+def test_view(request):
+    """Vista simple para probar que la aplicación funciona"""
+    return HttpResponse("""
+    <html>
+    <head><title>UnityGov - Test</title></head>
+    <body>
+        <h1>🎉 UnityGov está funcionando!</h1>
+        <p>Esta es una página de prueba.</p>
+        <ul>
+            <li><a href="/dashboard/">Dashboard</a></li>
+            <li><a href="/admin/">Admin</a></li>
+            <li><a href="/chat/">Chat</a></li>
+        </ul>
+    </body>
+    </html>
+    """)
+
+# Y modificar dashboard/urls.py para incluir:
+# path('test/', views.test_view, name="test"),
+
+
+'''
+
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.db.models.functions import TruncMonth
@@ -167,3 +194,5 @@ class ContratoListView(ListView):
     
 def emilia(request):
     return render(request, '', {})
+
+    '''

@@ -1,209 +1,210 @@
 #!/usr/bin/env python3
 """
-Cambiar a Dockerfile para evitar problemas con Nixpacks
+Diagnosticar problemas de deployment en Railway
 """
 
 from pathlib import Path
-import shutil
 
-def remove_nixpacks_files():
-    """Elimina todos los archivos relacionados con Nixpacks"""
+def check_urls_configuration():
+    """Verifica la configuración de URLs"""
     
-    files_to_remove = [
-        'nixpacks.toml',
-        '.nixpacks.toml',
-        'nixpacks.json',
-        '.nixpacks.json',
-        'railway.json',  # También eliminar esto para usar Dockerfile
-        'Procfile',      # No necesario con Dockerfile
-        'runtime.txt',   # Especificado en Dockerfile
-        'Aptfile'        # Especificado en Dockerfile
-    ]
+    main_urls_path = Path('app/app/urls.py')
+    dashboard_urls_path = Path('app/dashboard/urls.py')
     
-    for filename in files_to_remove:
-        file_path = Path(filename)
-        if file_path.exists():
-            file_path.unlink()
-            print(f"✓ Eliminado: {filename}")
-
-def create_dockerfile():
-    """Crea Dockerfile optimizado para Railway"""
+    print("=== VERIFICANDO CONFIGURACIÓN DE URLs ===\n")
     
-    dockerfile_content = """# Dockerfile para Railway
-FROM python:3.9-slim
-
-# Variables de entorno
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
-
-# Instalar dependencias del sistema
-RUN apt-get update && apt-get install -y \\
-    postgresql-client \\
-    libpq-dev \\
-    gcc \\
-    && rm -rf /var/lib/apt/lists/*
-
-# Crear directorio de trabajo
-WORKDIR /app
-
-# Copiar requirements y instalar dependencias Python
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copiar código de la aplicación
-COPY . .
-
-# Crear directorio para archivos estáticos
-RUN mkdir -p staticfiles
-
-# Recopilar archivos estáticos
-RUN cd app && python manage.py collectstatic --noinput
-
-# Exponer puerto
-EXPOSE $PORT
-
-# Comando de inicio
-CMD cd app && python manage.py migrate && gunicorn app.wsgi:application --bind 0.0.0.0:$PORT"""
-    
-    Path('Dockerfile').write_text(dockerfile_content, encoding='utf-8')
-    print("✓ Dockerfile creado")
-
-def create_dockerignore():
-    """Crea .dockerignore para optimizar build"""
-    
-    dockerignore_content = """.git
-.gitignore
-README.md
-*.md
-.env
-.venv
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-pip-log.txt
-pip-delete-this-directory.txt
-.coverage
-.pytest_cache/
-.mypy_cache/
-staticfiles/
-.DS_Store
-Thumbs.db
-nixpacks.toml
-.nixpacks.toml
-railway.json"""
-    
-    Path('.dockerignore').write_text(dockerignore_content, encoding='utf-8')
-    print("✓ .dockerignore creado")
-
-def fix_requirements():
-    """Asegura que requirements.txt esté correcto"""
-    
-    req_path = Path('requirements.txt')
-    if not req_path.exists():
-        print("X requirements.txt no encontrado")
-        return
-    
-    content = req_path.read_text(encoding='utf-8')
-    
-    # Cambios críticos
-    replacements = {
-        'psycopg2==2.9.10': 'psycopg2-binary==2.9.9',
-        'git-filter-repo==2.47.0': '# git-filter-repo==2.47.0  # No necesario'
-    }
-    
-    for old, new in replacements.items():
-        if old in content:
-            content = content.replace(old, new)
-            print(f"✓ Reemplazado: {old}")
-    
-    # Asegurar dependencias
-    required = [
-        'gunicorn==21.2.0',
-        'whitenoise==6.6.0', 
-        'dj-database-url==2.1.0'
-    ]
-    
-    for dep in required:
-        dep_name = dep.split('==')[0]
-        if dep_name not in content:
-            content += f"\n{dep}"
-            print(f"✓ Agregado: {dep}")
-    
-    req_path.write_text(content, encoding='utf-8')
-    print("✓ requirements.txt verificado")
-
-def verify_settings():
-    """Verifica configuraciones básicas en settings.py"""
-    
-    settings_path = Path('app/app/settings.py')
-    if not settings_path.exists():
-        print("! settings.py no encontrado")
-        return
-    
-    content = settings_path.read_text(encoding='utf-8')
-    
-    checks = [
-        ('DATABASE_URL', 'Configuración de BD'),
-        ('STATIC_ROOT', 'Archivos estáticos'),
-        ('WhiteNoiseMiddleware', 'WhiteNoise'),
-        ('.railway.app', 'ALLOWED_HOSTS')
-    ]
-    
-    print("\nVerificando settings.py:")
-    for check, desc in checks:
-        if check in content:
-            print(f"✓ {desc}")
+    # Verificar URLs principales
+    if main_urls_path.exists():
+        content = main_urls_path.read_text(encoding='utf-8')
+        print("✓ app/app/urls.py encontrado")
+        print("Contenido:")
+        print("-" * 40)
+        print(content)
+        print("-" * 40)
+        
+        # Verificar si hay una ruta para '/'
+        if "path(''" in content:
+            print("✓ Ruta raíz configurada")
         else:
-            print(f"! {desc} - puede necesitar configuración")
+            print("❌ NO hay ruta para '/' configurada")
+    else:
+        print("❌ app/app/urls.py NO encontrado")
+    
+    print("\n" + "="*50 + "\n")
+    
+    # Verificar URLs de dashboard
+    if dashboard_urls_path.exists():
+        content = dashboard_urls_path.read_text(encoding='utf-8')
+        print("✓ app/dashboard/urls.py encontrado")
+        print("Contenido:")
+        print("-" * 40)
+        print(content)
+        print("-" * 40)
+    else:
+        print("❌ app/dashboard/urls.py NO encontrado")
+
+def check_views():
+    """Verifica las vistas de dashboard"""
+    
+    views_path = Path('app/dashboard/views.py')
+    
+    print("\n=== VERIFICANDO VISTAS ===\n")
+    
+    if views_path.exists():
+        content = views_path.read_text(encoding='utf-8')
+        print("✓ app/dashboard/views.py encontrado")
+        
+        # Verificar funciones principales
+        functions = ['home', 'dashboard', 'expired', 'api']
+        
+        for func in functions:
+            if f"def {func}(" in content:
+                print(f"✓ Función {func} encontrada")
+            else:
+                print(f"❌ Función {func} NO encontrada")
+    else:
+        print("❌ app/dashboard/views.py NO encontrado")
+
+def check_templates():
+    """Verifica que existan los templates necesarios"""
+    
+    print("\n=== VERIFICANDO TEMPLATES ===\n")
+    
+    template_paths = [
+        'app/templates/navbar.html',
+        'app/templates/contract_dash.html',
+        'app/templates/home/home.html',
+        'app/templates/index.html'
+    ]
+    
+    for template_path in template_paths:
+        path = Path(template_path)
+        if path.exists():
+            print(f"✓ {template_path}")
+        else:
+            print(f"❌ {template_path} NO encontrado")
+
+def check_static_files():
+    """Verifica configuración de archivos estáticos"""
+    
+    print("\n=== VERIFICANDO ARCHIVOS ESTÁTICOS ===\n")
+    
+    static_dirs = [
+        'app/static',
+        'app/staticfiles',
+        'staticfiles'
+    ]
+    
+    for static_dir in static_dirs:
+        path = Path(static_dir)
+        if path.exists():
+            print(f"✓ {static_dir} existe")
+            # Contar archivos
+            files = list(path.rglob('*'))
+            print(f"  - {len(files)} archivos encontrados")
+        else:
+            print(f"❌ {static_dir} NO existe")
+
+def generate_fixed_urls():
+    """Genera configuración de URLs corregida"""
+    
+    print("\n=== CONFIGURACIÓN DE URLs SUGERIDA ===\n")
+    
+    main_urls_fixed = '''"""
+URL configuration for app project.
+"""
+from django.contrib import admin
+from django.urls import path, include
+from django.views.generic import RedirectView
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('dashboard.urls')),  # Ruta raíz apunta a dashboard
+    path('contratacion/', include('dashboard.urls')),
+    path('chat/', include('chatbot.urls')),
+]'''
+    
+    dashboard_urls_fixed = '''from django.urls import path
+from . import views
+from .views import ContratoListView
+
+urlpatterns = [
+    path('', views.dashboard, name="dashboard"),  # Ruta raíz
+    path('dashboard/', views.dashboard, name="dashboard"),
+    path('expired/', views.expired, name="expired"),
+    path('expired-edur/', views.expirededur, name="expirededur"),
+    path('report/', ContratoListView.as_view(), name='contratos_list'),
+    path('api/', views.api, name="api"),
+    path('emilia/', views.emilia, name="emilia"),
+]'''
+    
+    print("📁 app/app/urls.py debería contener:")
+    print("-" * 40)
+    print(main_urls_fixed)
+    print("-" * 40)
+    
+    print("\n📁 app/dashboard/urls.py debería contener:")
+    print("-" * 40)
+    print(dashboard_urls_fixed)
+    print("-" * 40)
+
+def railway_debugging_commands():
+    """Comandos para debuggear en Railway"""
+    
+    print("\n=== COMANDOS PARA DEBUGGEAR EN RAILWAY ===\n")
+    
+    commands = [
+        "# 1. Ver logs completos:",
+        "Railway → Deploy → View Logs",
+        "",
+        "# 2. Acceder a shell de Railway:",
+        "Railway → Deploy → Shell",
+        "",
+        "# 3. Comandos útiles en el shell:",
+        "cd app",
+        "python manage.py check",
+        "python manage.py showmigrations", 
+        "python manage.py collectstatic --noinput",
+        "python manage.py runserver 0.0.0.0:8080 --insecure",
+        "",
+        "# 4. Verificar variables de entorno:",
+        "env | grep DATABASE",
+        "env | grep SECRET",
+        "",
+        "# 5. Probar URLs específicas:",
+        "curl http://localhost:8080/",
+        "curl http://localhost:8080/dashboard/",
+        "curl http://localhost:8080/admin/"
+    ]
+    
+    for cmd in commands:
+        print(cmd)
 
 def main():
-    print("Cambiando a Dockerfile para evitar Nixpacks...\n")
+    print("🔍 DIAGNOSTICANDO DEPLOYMENT EN RAILWAY...\n")
     
-    print("1. Eliminando archivos de Nixpacks:")
-    remove_nixpacks_files()
-    
-    print("\n2. Creando Dockerfile:")
-    create_dockerfile()
-    
-    print("\n3. Creando .dockerignore:")
-    create_dockerignore()
-    
-    print("\n4. Verificando requirements.txt:")
-    fix_requirements()
-    
-    print("\n5. Verificando settings.py:")
-    verify_settings()
+    check_urls_configuration()
+    check_views()
+    check_templates()
+    check_static_files()
+    generate_fixed_urls()
+    railway_debugging_commands()
     
     print("\n" + "="*60)
-    print("✓ Migración a Dockerfile completada!")
+    print("🎯 POSIBLES CAUSAS DEL PROBLEMA:")
+    print("="*60)
+    print("1. ❌ No hay ruta configurada para '/'")
+    print("2. ❌ Error en las vistas de dashboard")
+    print("3. ❌ Templates faltantes")
+    print("4. ❌ Archivos estáticos no encontrados")
+    print("5. ❌ Variables de entorno mal configuradas")
     
-    print("\nArchivos creados:")
-    print("  - Dockerfile (configuración completa)")
-    print("  - .dockerignore (optimización)")
-    
-    print("\nArchivos eliminados:")
-    print("  - nixpacks.toml, railway.json, Procfile, etc.")
-    
-    print("\nVentajas del Dockerfile:")
-    print("  - Control total sobre el entorno")
-    print("  - Sin problemas de Nixpacks")
-    print("  - Build más predecible")
-    print("  - Fácil debugging")
-    
-    print("\nPróximos pasos:")
-    print("1. git add .")
-    print("2. git commit -m 'Switch to Dockerfile - avoid Nixpacks issues'")
-    print("3. git push origin main")
-    print("4. Railway detectará automáticamente el Dockerfile")
-    
-    print("\nVariables de entorno necesarias en Railway:")
-    print("  SECRET_KEY=tu-clave-secreta")
-    print("  DEBUG=False")
-    print("  OPENAI_API_KEY=tu-openai-key")
+    print("\n🔧 PRÓXIMOS PASOS:")
+    print("1. Ejecutar este diagnóstico")
+    print("2. Revisar logs de Railway")
+    print("3. Verificar configuración de URLs")
+    print("4. Probar en shell de Railway")
+    print("5. Corregir y redesplegar")
 
 if __name__ == "__main__":
     main()
