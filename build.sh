@@ -1,14 +1,12 @@
 #!/bin/bash
-
-# build.sh - Script de build para Railway
-
 set -e
 
-echo "🔧 Instalando dependencias..."
+echo "Installing Python dependencies..."
+pip install --upgrade pip
 pip install -r requirements.txt
 
-echo "📁 Recolectando archivos estáticos..."
+echo "Collecting static files..."
 cd app
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear
 
-echo "✅ Build completado!"
+echo "Build completed!"
