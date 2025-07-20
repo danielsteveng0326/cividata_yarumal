@@ -3,6 +3,7 @@ from . import views
 from .views import ContratoListView
 
 urlpatterns = [
+    path('', views.dashboard, name="dashboard"),
     path('dashboard/', views.dashboard, name="dashboard"),
     path('expired/', views.expired, name="expired"),
     path('expired-edur/', views.expirededur, name="expirededur"),

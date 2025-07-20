@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('', include('dashboard.urls')),
     path('admin/', admin.site.urls),
     path('contratacion/', include('dashboard.urls')),  # Incluye las URLs de dashboard
     path('chat/', include('chatbot.urls')),  # Incluimos las URLs de chatbot
