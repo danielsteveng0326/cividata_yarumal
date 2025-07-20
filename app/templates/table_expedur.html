@@ -1,64 +1,387 @@
 {% extends 'navbar.html' %}
+{% load static %}
 
 {% block content %}
-  <!-- Content Header (Page header) -->
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1>Contratos EDENORTE Próximos a Vencer</h1>
-        </div>
+<!-- Content Header -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1><i class="fas fa-clock text-warning mr-2"></i>Contratos EDENORTE Próximos a Vencer</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active">Contratos EDENORTE por Vencer</li>
+        </ol>
       </div>
     </div>
-    <!-- /.container-fluid -->
-  </section>
+  </div>
+</section>
 
-  <!-- Main content -->
-  <section class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <!-- /.card-header -->
-            <div class="card-body table-responsive p-0" style="height: 435px;">
-              <table class="table table-head-fixed text-nowrap">
-                <thead>
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        
+        <!-- Info boxes para estadísticas rápidas -->
+        <div class="row mb-3">
+          <div class="col-md-4 col-sm-4 col-12">
+            <div class="info-box bg-danger">
+              <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">(≤5 días)</span>
+                <span class="info-box-number" id="criticos-count">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 col-12">
+            <div class="info-box bg-warning">
+              <span class="info-box-icon"><i class="fas fa-clock"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">(6-15 días)</span>
+                <span class="info-box-number" id="proximos-count">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 col-12">
+            <div class="info-box bg-success">
+              <span class="info-box-icon"><i class="fas fa-check"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">(>15 días)</span>
+                <span class="info-box-number" id="normal-count">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta principal -->
+        <div class="card shadow">
+          <div class="card-header bg-success text-white">
+            <h3 class="card-title">
+              <i class="fas fa-table mr-2"></i>
+              Lista de Contratos EDENORTE por Vencer
+            </h3>
+            <div class="card-tools d-flex flex-wrap align-items-center">
+              <!-- Selector de cantidad de registros -->
+              <div class="input-group input-group-sm mb-2" style="width: 180px;">
+                <div class="input-group-prepend">
+                  <span class="input-group-text bg-white">
+                    <i class="fas fa-list"></i>
+                  </span>
+                </div>
+                <select class="form-control" id="recordsPerPage">
+                  <option value="10">10 registros</option>
+                  <option value="20">20 registros</option>
+                  <option value="50">50 registros</option>
+                  <option value="-1">Todos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover mb-0" id="contratosTable">
+                <thead class="thead-dark">
                   <tr>
-                    <th class="px-3 py-2 border-b text-left">Contrato N°</th>
-                    <th class="px-3 py-2 border-b text-left">URL</th>
-                    <th class="px-3 py-2 border-b text-left">Fecha Fin</th>
-                    <th class="px-3 py-2 border-b text-left">Contratista / Objeto</th>
+                    <th width="15%">
+                      <i class="fas fa-hashtag mr-1"></i>Contrato N°
+                    </th>
+                    <th width="10%">
+                      <i class="fas fa-link mr-1"></i>URL
+                    </th>
+                    <th width="15%">
+                      <i class="fas fa-calendar-alt mr-1"></i>Fecha Fin
+                    </th>
+                    <th width="10%">
+                      <i class="fas fa-clock mr-1"></i>Días Rest.
+                    </th>
+                    <th width="50%">
+                      <i class="fas fa-user-tie mr-1"></i>Contratista
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for contrato in expired_contract2 %}
-                    <tr>
-                      <td class="px-3 py-1 border-b">{{ contrato.referencia_del_contrato }}</td>
-                      <td class="px-3 py-1 border-b">
-                        <a href="{{ contrato.url_proceso }}" target="_blank" class="inline-block px-1 py-1 bg-blue-500 text-black rounded hover:bg-blue-600 transition-colors">Ver</a>
-                      </td>
-                      <td class="px-3 py-1 border-b">{{ contrato.fecha_de_fin_del_contrato|date:'d/m/Y' }}</td>
-                      <td class="px-3 py-1 border-b">
-                        <!-- Ajusta el ancho de la columna -->
-                        <details class="max-w-xs">
-                          <!-- Limita el ancho de los detalles -->
-                          <summary class="cursor-pointer">{{ contrato.proveedor_adjudicado|truncatechars:60 }}</summary>
-                          <div class="whitespace-pre-wrap">{{ contrato.objeto_del_contrato }}</div>
-                        </details>
-                      </td>
-                    </tr>
+                  <tr class="contrato-row" data-contrato-id="{{ forloop.counter }}">
+                    <td>
+                      <span class="badge badge-secondary">{{ contrato.referencia_del_contrato }}</span>
+                    </td>
+                    <td>
+                      <a href="{{ contrato.url_proceso }}" target="_blank" 
+                         class="btn btn-outline-primary btn-sm" 
+                         title="Ver proceso en SECOP">
+                        <i class="fas fa-external-link-alt"></i>
+                      </a>
+                    </td>
+                    <td>
+                      <span class="fecha-fin">{{ contrato.fecha_de_fin_del_contrato|date:"d/m/Y" }}</span>
+                      <small class="d-block text-muted">{{ contrato.fecha_de_fin_del_contrato|date:"l" }}</small>
+                    </td>
+                    <td>
+                      <span class="dias-restantes badge" data-fecha="{{ contrato.fecha_de_fin_del_contrato|date:'Y-m-d' }}">
+                        <!-- Se calcula con JavaScript -->
+                      </span>
+                    </td>
+                    <td>
+                      <div class="contratista-info">
+                        <button class="btn btn-link text-left p-0 contratista-btn" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#objeto{{ forloop.counter }}" 
+                                aria-expanded="false">
+                          <strong>{{ contrato.proveedor_adjudicado|truncatechars:60 }}</strong>
+                          <i class="fas fa-chevron-down ml-2 toggle-icon"></i>
+                        </button>
+                        
+                        <!-- Objeto del contrato desplegable -->
+                        <div class="collapse mt-2" id="objeto{{ forloop.counter }}">
+                          <div class="card card-body bg-light border-left border-success">
+                            <h6 class="text-success">
+                              <i class="fas fa-file-alt mr-2"></i>Objeto del Contrato:
+                            </h6>
+                            <p class="mb-0 text-justify">{{ contrato.objeto_del_contrato }}</p>
+                            
+                            <!-- Información adicional -->
+                            <hr class="my-2">
+                            <div class="row">
+                              <div class="col-md-6">
+                                <small class="text-muted">
+                                  <strong>Valor:</strong> ${{ contrato.valor_del_contrato|floatformat:0 }}
+                                </small>
+                              </div>
+                              <div class="col-md-6">
+                                <small class="text-muted">
+                                  <strong>Estado:</strong> {{ contrato.estado_contrato }}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center py-4">
+                      <div class="text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <h5>No hay contratos EDENORTE próximos a vencer</h5>
+                        <p>Todos los contratos están al día o ya han vencido.</p>
+                      </div>
+                    </td>
+                  </tr>
                   {% endfor %}
                 </tbody>
               </table>
             </div>
-            <!-- /.card-body -->
           </div>
-          <!-- /.card -->
+
+          <!-- Footer con información -->
+          <div class="card-footer bg-light">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="dataTables_info">
+                  Mostrando <span id="showing-start">1</span> a <span id="showing-end">10</span> 
+                  de <span id="total-records">{{ expired_contract2|length }}</span> registros
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="float-right">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prevPage">
+                      <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="nextPage">
+                      Siguiente <i class="fas fa-chevron-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <!-- /.row -->
     </div>
-    <!-- /.container-fluid -->
-  </section>
-  <!-- /.content -->
+  </div>
+</section>
+
+<style>
+/* Estilos personalizados */
+.contrato-row {
+  transition: all 0.3s ease;
+}
+
+.contrato-row.table-danger {
+  background-color: #f8d7da !important; /* Rojo suave */
+}
+
+.contrato-row.table-warning {
+  background-color: #fff3cd !important; /* Amarillo suave */
+}
+
+.contrato-row.table-success {
+  background-color: #d4edda !important; /* Verde suave */
+}
+
+.contrato-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.contratista-btn {
+  text-decoration: none !important;
+  color: #495057 !important;
+  width: 100%;
+  text-align: left !important;
+}
+
+.contratista-btn:hover {
+  color: #28a745 !important;
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.contratista-btn[aria-expanded="true"] .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.info-box {
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.badge {
+  font-size: 0.85em;
+}
+
+.dias-restantes {
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+}
+
+.card-header {
+  border-radius: 10px 10px 0 0 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentPage = 1;
+    let recordsPerPage = 10;
+    let allRows = document.querySelectorAll('.contrato-row');
+    let totalRecords = allRows.length;
+    
+    // Calcular días restantes y aplicar colores
+    function calcularDiasYColores() {
+        let contadores = { criticos: 0, proximos: 0, normal: 0 };
+        
+        allRows.forEach(function(row) {
+            const fechaFinStr = row.querySelector('.dias-restantes').dataset.fecha;
+            const fechaFin = new Date(fechaFinStr);
+            const hoy = new Date();
+            const diffTime = fechaFin - hoy;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            const badgeElement = row.querySelector('.dias-restantes');
+            
+            // Remover clases previas
+            row.classList.remove('table-danger', 'table-warning', 'table-success');
+            badgeElement.classList.remove('badge-danger', 'badge-warning', 'badge-success');
+            
+            if (diffDays <= 5) {
+                row.classList.add('table-danger');
+                badgeElement.classList.add('badge-danger');
+                badgeElement.textContent = diffDays <= 0 ? 'Vencido' : diffDays + ' días';
+                contadores.criticos++;
+            } else if (diffDays <= 15) {
+                row.classList.add('table-warning');
+                badgeElement.classList.add('badge-warning');
+                badgeElement.textContent = diffDays + ' días';
+                contadores.proximos++;
+            } else {
+                row.classList.add('table-success');
+                badgeElement.classList.add('badge-success');
+                badgeElement.textContent = diffDays + ' días';
+                contadores.normal++;
+            }
+        });
+        
+        // Actualizar contadores
+        document.getElementById('criticos-count').textContent = contadores.criticos;
+        document.getElementById('proximos-count').textContent = contadores.proximos;
+        document.getElementById('normal-count').textContent = contadores.normal;
+    }
+    
+    // Función de paginación
+    function showPage(page) {
+        const startIndex = (page - 1) * recordsPerPage;
+        const endIndex = recordsPerPage === -1 ? totalRecords : startIndex + recordsPerPage;
+        
+        allRows.forEach(function(row, index) {
+            if (recordsPerPage === -1 || (index >= startIndex && index < endIndex)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Actualizar información de paginación
+        const showingStart = totalRecords === 0 ? 0 : startIndex + 1;
+        const showingEnd = Math.min(endIndex, totalRecords);
+        
+        document.getElementById('showing-start').textContent = showingStart;
+        document.getElementById('showing-end').textContent = showingEnd;
+        document.getElementById('total-records').textContent = totalRecords;
+        
+        // Actualizar botones de navegación
+        document.getElementById('prevPage').disabled = page === 1;
+        document.getElementById('nextPage').disabled = recordsPerPage === -1 || endIndex >= totalRecords;
+    }
+    
+    // Event listeners
+    document.getElementById('recordsPerPage').addEventListener('change', function() {
+        recordsPerPage = parseInt(this.value);
+        currentPage = 1;
+        showPage(currentPage);
+    });
+    
+    document.getElementById('prevPage').addEventListener('click', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+    
+    document.getElementById('nextPage').addEventListener('click', function() {
+        const maxPages = recordsPerPage === -1 ? 1 : Math.ceil(totalRecords / recordsPerPage);
+        if (currentPage < maxPages) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
+    
+    // Inicializar
+    calcularDiasYColores();
+    showPage(currentPage);
+    
+    // Actualizar cada minuto
+    setInterval(calcularDiasYColores, 60000);
+});
+</script>
 {% endblock %}

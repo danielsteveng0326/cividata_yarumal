@@ -1,0 +1,380 @@
+{% extends 'navbar.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Content Header -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Bienvenido</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item active">Inicio</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    
+    <!-- Bienvenida Principal -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card card-primary card-outline">
+          <div class="card-header">
+            <div class="row align-items-center">
+              <div class="col-md-2 text-center">
+                <img src="{% static 'lib/adminlt320/dist/img/logoyar.png' %}" alt="Logo Yarumal" class="img-fluid" style="max-height: 80px;">
+              </div>
+              <div class="col-md-10">
+                <h3 class="card-title mb-0">
+                  <i class="fas fa-city text-primary mr-2"></i>
+                  Municipio de Yarumal - Sistema de Gestión Integral
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="row">
+              <div class="col-lg-8">
+                <h4 class="text-primary">¡Bienvenido al Sistema de Gestión Municipal!</h4>
+                <p class="lead">
+                  Esta plataforma integral ha sido diseñada específicamente para optimizar la gestión administrativa 
+                  del Municipio de Yarumal, integrando tecnología avanzada con las necesidades del sector público.
+
+                  CiviData le permite acceder de manera centralizada a todos los módulos de gestión municipal, 
+                  desde el seguimiento de contratos hasta la planificación territorial, facilitando la toma de 
+                  decisiones informadas y el cumplimiento de los objetivos del plan de desarrollo municipal.
+                </p>
+                <p>
+                  
+                </p>
+              </div>
+              <div class="col-lg-4 text-center">
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% comment %}
+    <!-- Módulos Disponibles -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h4 class="mb-3">
+          <i class="fas fa-th-large text-primary mr-2"></i>
+          Módulos del Sistema
+        </h4>
+      </div>
+    </div>
+
+    <!-- Cards de Módulos -->
+    <div class="row">
+      <!-- Contratación -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card card-outline card-primary h-100">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-handshake text-primary mr-2"></i>
+              Contratación
+            </h3>
+          </div>
+          <div class="card-body">
+            <p>Gestión integral del proceso contractual con integración SECOP II, seguimiento de vencimientos y análisis de proveedores.</p>
+            <ul class="list-unstyled">
+              <li><i class="fas fa-check text-success mr-2"></i>Dashboard de contratos</li>
+              <li><i class="fas fa-check text-success mr-2"></i>Seguimiento de vencimientos</li>
+              <li><i class="fas fa-check text-success mr-2"></i>Reportes automatizados</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-sm">
+              <i class="fas fa-arrow-right mr-1"></i>Acceder
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plan de Desarrollo -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card card-outline card-success h-100">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-tasks text-success mr-2"></i>
+              Plan de Desarrollo
+            </h3>
+          </div>
+          <div class="card-body">
+            <p>Seguimiento y monitoreo del plan de desarrollo municipal con indicadores de gestión y evaluación de metas.</p>
+            <ul class="list-unstyled">
+              <li><i class="fas fa-clock text-warning mr-2"></i>Próximamente</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>En desarrollo</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>Configuración inicial</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-secondary btn-sm" disabled>
+              <i class="fas fa-cog mr-1"></i>En Desarrollo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gestión de Calidad -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card card-outline card-warning h-100">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-award text-warning mr-2"></i>
+              Gestión de la Calidad
+            </h3>
+          </div>
+          <div class="card-body">
+            <p>Sistema de gestión de calidad con control de procesos, auditorías y mejora continua administrativa.</p>
+            <ul class="list-unstyled">
+              <li><i class="fas fa-clock text-warning mr-2"></i>Próximamente</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>En desarrollo</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>Configuración inicial</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-secondary btn-sm" disabled>
+              <i class="fas fa-cog mr-1"></i>En Desarrollo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Geoportal -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card card-outline card-info h-100">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-map-marked-alt text-info mr-2"></i>
+              Geoportal
+            </h3>
+          </div>
+          <div class="card-body">
+            <p>Visualización geográfica de proyectos municipales, análisis territorial y herramientas de planificación urbana.</p>
+            <ul class="list-unstyled">
+              <li><i class="fas fa-clock text-warning mr-2"></i>Próximamente</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>En desarrollo</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>Configuración inicial</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-secondary btn-sm" disabled>
+              <i class="fas fa-cog mr-1"></i>En Desarrollo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observatorios -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card card-outline card-purple h-100">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-binoculars text-purple mr-2"></i>
+              Observatorios
+            </h3>
+          </div>
+          <div class="card-body">
+            <p>Monitoreo sectorial y análisis de indicadores socioeconómicos para el seguimiento de políticas públicas.</p>
+            <ul class="list-unstyled">
+              <li><i class="fas fa-clock text-warning mr-2"></i>Próximamente</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>En desarrollo</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>Configuración inicial</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-secondary btn-sm" disabled>
+              <i class="fas fa-cog mr-1"></i>En Desarrollo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Políticas Públicas -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card card-outline card-danger h-100">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-balance-scale text-danger mr-2"></i>
+              Políticas Públicas
+            </h3>
+          </div>
+          <div class="card-body">
+            <p>Diseño, implementación y evaluación de políticas públicas con herramientas de análisis de impacto.</p>
+            <ul class="list-unstyled">
+              <li><i class="fas fa-clock text-warning mr-2"></i>Próximamente</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>En desarrollo</li>
+              <li><i class="fas fa-clock text-warning mr-2"></i>Configuración inicial</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-secondary btn-sm" disabled>
+              <i class="fas fa-cog mr-1"></i>En Desarrollo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asistente Emil-IA -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card card-outline card-success">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-robot text-success mr-2"></i>
+              Emil-IA - Asistente Virtual de Contratación
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <p class="mb-2">
+                  <strong>Emil-IA</strong> es tu asistente virtual especializado en contratación estatal. 
+                  Te ayuda a estructurar documentos, crear justificaciones de contratación y optimizar 
+                  procesos administrativos según la normativa colombiana.
+                </p>
+                <ul class="list-inline mb-0">
+                  <li class="list-inline-item">
+                    <span class="badge badge-success">
+                      <i class="fas fa-check mr-1"></i>Objetos de contratación
+                    </span>
+                  </li>
+                  <li class="list-inline-item">
+                    <span class="badge badge-success">
+                      <i class="fas fa-check mr-1"></i>Justificaciones técnicas
+                    </span>
+                  </li>
+                  <li class="list-inline-item">
+                    <span class="badge badge-success">
+                      <i class="fas fa-check mr-1"></i>Actividades específicas
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-md-4 text-center">
+                <a href="{% url 'chatbot:chat' %}" class="btn btn-success btn-lg">
+                  <i class="fas fa-comments mr-2"></i>
+                  Conversar con Emil-IA
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <h4 class="mb-3">
+          <i class="fas fa-bolt text-warning mr-2"></i>
+          Accesos Rápidos
+        </h4>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3 col-md-6">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fas fa-file-contract"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Contratos Activos</span>
+            <span class="info-box-number">Ver Dashboard</span>
+            <a href="{% url 'dashboard' %}" class="small-box-footer">
+              Ir al módulo <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="info-box">
+          <span class="info-box-icon bg-warning">
+            <i class="fas fa-clock"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Próximos a Vencer</span>
+            <span class="info-box-number">Ver Lista</span>
+            <a href="{% url 'expired' %}" class="small-box-footer">
+              Revisar contratos <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="info-box">
+          <span class="info-box-icon bg-success">
+            <i class="fas fa-table"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Reportes</span>
+            <span class="info-box-number">Generar</span>
+            <a href="{% url 'contratos_list' %}" class="small-box-footer">
+              Ver reportes <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="info-box">
+          <span class="info-box-icon bg-danger">
+            <i class="fas fa-sync"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Actualizar Datos</span>
+            <span class="info-box-number">SECOP II</span>
+            <a href="{% url 'api' %}" class="small-box-footer">
+              Sincronizar <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endcomment %}
+  </div>
+</section>
+
+<style>
+.card-outline.card-purple {
+  border-top: 3px solid #6f42c1;
+}
+
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+.h-100 {
+  height: 100% !important;
+}
+
+.info-box:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
