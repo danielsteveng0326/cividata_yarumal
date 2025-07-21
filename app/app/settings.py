@@ -245,41 +245,32 @@ MESSAGE_TAGS = {
     messages.ERROR: 'error',
 }
 
-
 # ========== AUTO-CREAR ADMIN EN RAILWAY ==========
-if os.environ.get('RAILWAY_ENVIRONMENT'):
-    print("🚂 Detectado Railway - Creando usuario administrador...")
+if os.environ.get('RAILWAY_ENVIRONMENT') and not DEBUG:
+    print("🚂 Railway detectado - Verificando usuario administrador...")
     
     try:
         from django.contrib.auth.models import User
         
-        # Datos del usuario (iguales a tu script)
         username = "admin"
-        email = "admin@cividata.co"  # Agregué email
-        password = "admin2025"
-        first_name = "Administrador"
-        last_name = "Sistema"
+        email = "admin@yarumal.gov.co"
+        password = "YarumalAdmin2025!"
         
-        # Verificar si ya existe
-        if User.objects.filter(username=username).exists():
-            print(f"ℹ️ El usuario '{username}' ya existe")
-        else:
-            # Crear usuario
+        if not User.objects.filter(username=username).exists():
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password,
-                first_name=first_name,
-                last_name=last_name,
+                first_name="Administrador",
+                last_name="Sistema",
                 is_staff=True,
                 is_superuser=True
             )
-            
-            print("✅ Usuario administrador creado exitosamente!")
-            print(f"👤 Usuario: {username}")
-            print(f"🔑 Contraseña: {password}")
+            print(f"✅ Usuario administrador '{username}' creado exitosamente!")
             print(f"📧 Email: {email}")
-            print(f"🏷️ Nombre: {user.get_full_name()}")
+            print(f"🔑 Contraseña: {password}")
+        else:
+            print(f"ℹ️ Usuario '{username}' ya existe")
             
     except Exception as e:
         print(f"❌ Error creando admin: {e}")
