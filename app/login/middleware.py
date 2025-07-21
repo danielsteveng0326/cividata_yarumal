@@ -1,35 +1,45 @@
-# app/login/middleware.py
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.conf import settings
+import os
 
 class LoginRequiredMiddleware:
-    """
-    Middleware que requiere login para todas las páginas excepto las públicas
-    """
-    
     def __init__(self, get_response):
         self.get_response = get_response
+        self.admin_created = False
 
     def __call__(self, request):
-        # URLs que no requieren autenticación
-        public_urls = [
-            '/login/',
-            '/admin/login/',
-            '/admin/',
-            '/static/',
-            '/media/',
-        ]
+        # Crear admin una sola vez
+        if not self.admin_created and os.environ.get('RAILWAY_ENVIRONMENT'):
+            self.create_admin()
+            self.admin_created = True
         
-        # Verificar si la URL actual es pública
+        # Resto del middleware de login...
+        public_urls = ['/login/', '/admin/login/', '/admin/', '/static/', '/media/']
         is_public = any(request.path.startswith(url) for url in public_urls)
         
-        # Si no es una URL pública y el usuario no está autenticado
         if not is_public and not request.user.is_authenticated:
-            # Redirigir al login con next parameter
             login_url = '/login/'
             return HttpResponseRedirect(f"{login_url}?next={request.path}")
         
         response = self.get_response(request)
         return response
+    
+    def create_admin(self):
+        try:
+            from django.contrib.auth.models import User
+            
+            username = 'admin'
+            if not User.objects.filter(username=username).exists():
+                User.objects.create_user(
+                    username=username,
+                    email='admin@yarumal.gov.co',
+                    password='YarumalAdmin2025!',
+                    first_name='Administrador',
+                    last_name='Sistema',
+                    is_staff=True,
+                    is_superuser=True
+                )
+                print(f'✅ Usuario {username} creado desde middleware!')
+        except Exception as e:
+            print(f'⚠️ Error en middleware: {e}')
