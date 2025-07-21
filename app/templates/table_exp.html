@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (diffDays <= 5) {
                 row.classList.add('table-danger');
                 badgeElement.classList.add('badge-danger');
-                badgeElement.textContent = diffDays <= 0 ? 'Vencido' : diffDays + ' días';
+                badgeElement.textContent = diffDays <= 0 ? 'Vence hoy' : diffDays + ' días';
                 contadores.criticos++;
             } else if (diffDays <= 15) {
                 row.classList.add('table-warning');
