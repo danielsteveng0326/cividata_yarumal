@@ -21,7 +21,20 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.railway.app',
     '.up.railway.app',
+    'yarumal.terrigov.co',  # Tu dominio personalizado
+    '.terrigov.co',         # Wildcard para subdominios
 ]
+
+# CSRF para producción
+CSRF_TRUSTED_ORIGINS = [
+    'https://yarumal.terrigov.co',
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
+
+# Configuración CSRF
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = True
 
 # Agregar dominio específico si está configurado
 if os.environ.get('RAILWAY_PUBLIC_DOMAIN'):
