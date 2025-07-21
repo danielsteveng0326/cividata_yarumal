@@ -1,4 +1,5 @@
 from .models import Contrato
+from django.utils import timezone
 from django.db import transaction
 from datetime import datetime
 import pytz
@@ -17,14 +18,34 @@ def process_api_data(contratos_data):
     actualizados = 0
     errores = 0
     
-    def parse_date(date_str):
-        """Convierte string de fecha a datetime o None si es inválido"""
-        if not date_str:
-            return None
-        try:
-            return datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%f').replace(tzinfo=pytz.UTC)
-        except (ValueError, TypeError):
-            return None
+    def parse_date(date_string):
+        """
+        Parsea fechas y las convierte a timezone-naive en Colombia
+        para evitar problemas de conversión automática
+        """
+    if not date_string:
+        return None
+    
+    try:
+        # Si la fecha viene con información de timezone
+        if 'T' in date_string and date_string.endswith('Z'):
+            # Parsear fecha UTC
+            dt = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
+            # Convertir a Colombia timezone
+            colombia_tz = pytz.timezone('America/Bogota')
+            dt_colombia = dt.astimezone(colombia_tz)
+            # Retornar como timezone-naive para evitar conversiones automáticas
+            return dt_colombia.replace(tzinfo=None)
+        
+        # Si es una fecha simple (YYYY-MM-DD)
+        elif '-' in date_string:
+            # Asumir que es medianoche en Colombia
+            return datetime.strptime(date_string, '%Y-%m-%d')
+        
+        return None
+    except (ValueError, TypeError) as e:
+        print(f"❌ Error parseando fecha {date_string}: {e}")
+        return None
 
     def clean_number(value):
         """Convierte strings numéricos a enteros o 0 si son inválidos"""

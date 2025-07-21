@@ -304,14 +304,97 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Iniciando script de contratos...');
+    
+    // Variables globales
     let currentPage = 1;
     let recordsPerPage = 10;
     let allRows = document.querySelectorAll('.contrato-row');
     let filteredRows = Array.from(allRows);
     let totalRecords = allRows.length;
     
+    console.log(`📊 Total filas encontradas: ${allRows.length}`);
+    
+    // Función mejorada para calcular días y aplicar colores
+    function calcularDiasYColores() {
+        console.log('🔄 Calculando días restantes...');
+        let contadores = { criticos: 0, proximos: 0, normal: 0 };
+        
+        filteredRows.forEach(function(row, index) {
+            const fechaFinElement = row.querySelector('.dias-restantes');
+            if (!fechaFinElement) {
+                console.warn(`⚠️ No se encontró elemento .dias-restantes en fila ${index}`);
+                return;
+            }
+            
+            const fechaFinStr = fechaFinElement.dataset.fecha;
+            console.log(`📅 Procesando fecha: ${fechaFinStr}`);
+            
+            if (!fechaFinStr) {
+                console.warn(`⚠️ No hay fecha en dataset para fila ${index}`);
+                return;
+            }
+            
+            // Crear fecha sin problemas de timezone
+            const [year, month, day] = fechaFinStr.split('-').map(Number);
+            const fechaFin = new Date(year, month - 1, day); // month-1 porque Date() usa 0-based months
+            
+            // Fecha actual sin timezone
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0); // Resetear horas para comparación de solo fechas
+            
+            // Calcular diferencia en días
+            const diffTime = fechaFin.getTime() - hoy.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            console.log(`⏰ Días restantes para ${fechaFinStr}: ${diffDays}`);
+            
+            const badgeElement = row.querySelector('.dias-restantes');
+            
+            // Limpiar clases previas
+            row.classList.remove('table-danger', 'table-warning', 'table-success');
+            badgeElement.classList.remove('badge-danger', 'badge-warning', 'badge-success');
+            
+            // Aplicar estilos según días restantes
+            if (diffDays <= 0) {
+                row.classList.add('table-danger');
+                badgeElement.classList.add('badge-danger');
+                badgeElement.textContent = diffDays === 0 ? 'Vence Hoy' : 'Vencido';
+                contadores.criticos++;
+            } else if (diffDays <= 5) {
+                row.classList.add('table-danger');
+                badgeElement.classList.add('badge-danger');
+                badgeElement.textContent = diffDays + ' días';
+                contadores.criticos++;
+            } else if (diffDays <= 15) {
+                row.classList.add('table-warning');
+                badgeElement.classList.add('badge-warning');
+                badgeElement.textContent = diffDays + ' días';
+                contadores.proximos++;
+            } else {
+                row.classList.add('table-success');
+                badgeElement.classList.add('badge-success');
+                badgeElement.textContent = diffDays + ' días';
+                contadores.normal++;
+            }
+        });
+        
+        // Actualizar contadores en la interfaz
+        const criticosElement = document.getElementById('criticos-count');
+        const proximosElement = document.getElementById('proximos-count');
+        const normalElement = document.getElementById('normal-count');
+        
+        if (criticosElement) criticosElement.textContent = contadores.criticos;
+        if (proximosElement) proximosElement.textContent = contadores.proximos;
+        if (normalElement) normalElement.textContent = contadores.normal;
+        
+        console.log('🔍 Contadores actualizados:', contadores);
+    }
+    
     // Filtro por departamento
     function filterByDepartment(selectedDepartments) {
+        console.log(`🔍 Filtrando por departamento: ${selectedDepartments}`);
+        
         if (!selectedDepartments) {
             filteredRows = Array.from(allRows);
         } else {
@@ -328,109 +411,82 @@ document.addEventListener('DOMContentLoaded', function() {
         showPage(currentPage);
     }
     
-    // Calcular días restantes y aplicar colores
-    function calcularDiasYColores() {
-        let contadores = { criticos: 0, proximos: 0, normal: 0 };
-        
-        filteredRows.forEach(function(row) {
-            const fechaFinStr = row.querySelector('.dias-restantes').dataset.fecha;
-            const fechaFin = new Date(fechaFinStr);
-            const hoy = new Date();
-            const diffTime = fechaFin - hoy;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            const badgeElement = row.querySelector('.dias-restantes');
-            
-            // Remover clases previas
-            row.classList.remove('table-danger', 'table-warning', 'table-success');
-            badgeElement.classList.remove('badge-danger', 'badge-warning', 'badge-success');
-            
-            if (diffDays <= 5) {
-                row.classList.add('table-danger');
-                badgeElement.classList.add('badge-danger');
-                badgeElement.textContent = diffDays <= 0 ? 'Vence hoy' : diffDays + ' días';
-                contadores.criticos++;
-            } else if (diffDays <= 15) {
-                row.classList.add('table-warning');
-                badgeElement.classList.add('badge-warning');
-                badgeElement.textContent = diffDays + ' días';
-                contadores.proximos++;
-            } else {
-                row.classList.add('table-success');
-                badgeElement.classList.add('badge-success');
-                badgeElement.textContent = diffDays + ' días';
-                contadores.normal++;
-            }
-        });
-        
-        // Actualizar contadores solo para registros filtrados
-        document.getElementById('criticos-count').textContent = contadores.criticos;
-        document.getElementById('proximos-count').textContent = contadores.proximos;
-        document.getElementById('normal-count').textContent = contadores.normal;
-    }
-    
     // Función de paginación
     function showPage(page) {
-        // Ocultar todas las filas primero
-        allRows.forEach(row => row.style.display = 'none');
-        
         const startIndex = (page - 1) * recordsPerPage;
-        const endIndex = recordsPerPage === -1 ? totalRecords : startIndex + recordsPerPage;
+        const endIndex = recordsPerPage === -1 ? filteredRows.length : startIndex + recordsPerPage;
         
-        // Mostrar solo las filas filtradas y paginadas
-        filteredRows.forEach(function(row, index) {
-            if (recordsPerPage === -1 || (index >= startIndex && index < endIndex)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+        // Ocultar todas las filas
+        allRows.forEach(row => {
+            row.style.display = 'none';
         });
         
+        // Mostrar solo las filas de la página actual
+        for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+            filteredRows[i].style.display = '';
+        }
+        
         // Actualizar información de paginación
-        const showingStart = totalRecords === 0 ? 0 : startIndex + 1;
-        const showingEnd = Math.min(endIndex, totalRecords);
+        const showingStart = document.getElementById('showing-start');
+        const showingEnd = document.getElementById('showing-end');
+        const totalRecordsElement = document.getElementById('total-records');
         
-        document.getElementById('showing-start').textContent = showingStart;
-        document.getElementById('showing-end').textContent = showingEnd;
-        document.getElementById('total-records').textContent = totalRecords;
+        if (showingStart) showingStart.textContent = startIndex + 1;
+        if (showingEnd) showingEnd.textContent = Math.min(endIndex, filteredRows.length);
+        if (totalRecordsElement) totalRecordsElement.textContent = filteredRows.length;
         
-        // Actualizar botones de navegación
-        document.getElementById('prevPage').disabled = page === 1;
-        document.getElementById('nextPage').disabled = recordsPerPage === -1 || endIndex >= totalRecords;
+        // Habilitar/deshabilitar botones de paginación
+        const prevButton = document.getElementById('prevPage');
+        const nextButton = document.getElementById('nextPage');
+        
+        if (prevButton) prevButton.disabled = (page === 1);
+        if (nextButton) nextButton.disabled = (endIndex >= filteredRows.length);
     }
     
     // Event listeners
-    document.getElementById('departmentFilter').addEventListener('change', function() {
-        filterByDepartment(this.value);
-    });
+    const departmentFilter = document.getElementById('departmentFilter');
+    if (departmentFilter) {
+        departmentFilter.addEventListener('change', function() {
+            filterByDepartment(this.value);
+        });
+    }
     
-    document.getElementById('recordsPerPage').addEventListener('change', function() {
-        recordsPerPage = parseInt(this.value);
-        currentPage = 1;
-        showPage(currentPage);
-    });
-    
-    document.getElementById('prevPage').addEventListener('click', function() {
-        if (currentPage > 1) {
-            currentPage--;
+    const recordsPerPageSelect = document.getElementById('recordsPerPage');
+    if (recordsPerPageSelect) {
+        recordsPerPageSelect.addEventListener('change', function() {
+            recordsPerPage = parseInt(this.value);
+            currentPage = 1;
             showPage(currentPage);
-        }
-    });
+        });
+    }
     
-    document.getElementById('nextPage').addEventListener('click', function() {
-        const maxPages = recordsPerPage === -1 ? 1 : Math.ceil(totalRecords / recordsPerPage);
-        if (currentPage < maxPages) {
-            currentPage++;
-            showPage(currentPage);
-        }
-    });
+    const prevButton = document.getElementById('prevPage');
+    if (prevButton) {
+        prevButton.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+    }
     
-    // Inicializar
+    const nextButton = document.getElementById('nextPage');
+    if (nextButton) {
+        nextButton.addEventListener('click', function() {
+            const maxPage = Math.ceil(filteredRows.length / recordsPerPage);
+            if (currentPage < maxPage) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+    }
+    
+    // Inicializar todo
+    console.log('🚀 Iniciando cálculos...');
     calcularDiasYColores();
     showPage(currentPage);
     
-    // Actualizar cada minuto
-    setInterval(calcularDiasYColores, 60000);
+    console.log('✅ Script de contratos cargado completamente');
 });
 </script>
 {% endblock %}

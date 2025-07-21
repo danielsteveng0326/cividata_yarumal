@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from .models import Contrato
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import ExtractMonth, ExtractYear
@@ -202,29 +202,26 @@ def dashboard(request):
 
 @login_required
 def expired(request):
-    fecha_actual = timezone.now() - timedelta(days=2)
+    # Usar date en lugar de timezone.now() para comparaciones de fecha
+    fecha_actual = date.today() - timedelta(days=2)
     
-    # Filtra los contratos que aún no han vencido
     expired_contract = Contrato.objects.filter(
         fecha_de_fin_del_contrato__gte=fecha_actual,
         codigo_entidad=codigo_ent
     ).order_by('fecha_de_fin_del_contrato')
     
-    # Renderiza el template con el contexto
-    return render(request, 'table_exp.html', {"expired_contract" : expired_contract})
+    return render(request, 'table_exp.html', {"expired_contract": expired_contract})
 
 @login_required
 def expirededur(request):
-    fecha_actual = timezone.now() - timedelta(days=2)
+    fecha_actual = date.today() - timedelta(days=2)
     
-    # Filtra los contratos que aún no han vencido
     expired_contract2 = Contrato.objects.filter(
         fecha_de_fin_del_contrato__gte=fecha_actual,
-        documento_proveedor = '901831522'
+        documento_proveedor='901831522'
     ).order_by('fecha_de_fin_del_contrato')
     
-    # Renderiza el template con el contexto
-    return render(request, 'table_expedur.html', {"expired_contract2" : expired_contract2})
+    return render(request, 'table_expedur.html', {"expired_contract2": expired_contract2})
 
 @login_required
 def api(request):
