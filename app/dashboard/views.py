@@ -1,3 +1,4 @@
+# app/dashboard/views.py - Versión con debugging para identificar el problema
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.db.models.functions import TruncMonth
@@ -15,6 +16,7 @@ import json
 import csv
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 #poner el id de la entidad
 #edenorte = 727001372   #nit = 901831522
@@ -25,141 +27,181 @@ codigo_ent = 704278142
 annoinicial=2025
 annofinal=2025
 
+@login_required
 def index(request):
     """Vista para la página de inicio/bienvenida"""
     return render(request, 'index.html', {})
 
+@login_required
 def home(request):
     return render(request, 'navbar.html', {})
 
+@login_required
 def dashboard(request):
-    # Filtro base para contratos del año
-    contratos_base = Contrato.objects.filter(
-        codigo_entidad=codigo_ent, 
-        fecha_de_firma__range=(datetime(annoinicial, 1, 1), datetime(annofinal, 12, 31, 23, 59, 59))
-    )
-    
-    # Datos existentes
-    suma_valor_del_contrato = contratos_base.aggregate(Sum('valor_del_contrato'))['valor_del_contrato__sum']
-    numero_de_registros = contratos_base.count()
-    numero_de_proveedores = contratos_base.values('documento_proveedor').distinct().count()
-    suma_valor_del_contrato = suma_valor_del_contrato//1000000 if suma_valor_del_contrato else 0
-    
-    # Consulta para obtener el número de contratos por mes SOLO 2025
-    contratos_por_mes = contratos_base.annotate(
-        mes=TruncMonth('fecha_de_firma')
-    ).values('mes').annotate(
-        total=Count('id')
-    ).order_by('mes')
-
-    # Preparar datos para Chart.js
-    labels = []
-    data = []
-
-    for item in contratos_por_mes:
-        if item['mes']:
-            labels.append(item['mes'].strftime('%B %Y'))  # Nombre del mes y año
-            data.append(item['total'])
-
-    # Obtener la suma de valores por mes SOLO 2025
-    valores_por_mes = contratos_base.annotate(
-        mes=TruncMonth('fecha_de_firma')
-    ).values('mes').annotate(
-        total_valor=Sum('valor_del_contrato')  # Sumamos los valores
-    ).order_by('mes')
-    
-    labels2 = []
-    data2 = []
-
-    for item in valores_por_mes:
-        if item['mes']:
-            mes = item['mes'].strftime('%B')
-            labels2.append(mes)
-            # Convertimos a millones para mejor visualización
-            valor_en_millones = float(item['total_valor']) / 1000000
-            data2.append(valor_en_millones)
-    
-    # NUEVO: Datos para gráfico de modalidades de contratación
-    modalidades = contratos_base.values('modalidad_de_contratacion').annotate(
-        total=Count('id')
-    ).order_by('-total')
-    
-    modalidades_labels = []
-    modalidades_data = []
-    for item in modalidades:
-        if item['modalidad_de_contratacion']:
-            modalidades_labels.append(item['modalidad_de_contratacion'])
-            modalidades_data.append(item['total'])
-    
-    # NUEVO: Datos para gráfico de departamentos
-    # Mapeo de números de documento a nombres de departamento
-    departamentos_map = {
-        '1037630032': 'Agricultura',
-        '1042768815': 'Infraestructura', 
-        '1042775303': 'Salud',
-        '1040733595': 'Gobierno',
-        '15329121': 'Seguridad',
-        '1007722573': 'Movilidad',
-        '1042762099': 'Educación',
-        '1042774482': 'Planeación',
-        '43822237': 'Planeación',
-        '1042771578': 'Planeación',
-        '32564314': 'Hacienda',
-        '1234567': 'Participación',
-        '12345': 'Movilidad'
-    }
-    
-    departamentos_contratos = contratos_base.values('numero_de_documento_ordenador_del_gasto').annotate(
-        total=Count('id')
-    )
-    
-    # Agrupar por departamento
-    departamentos_agrupados = {}
-    for item in departamentos_contratos:
-        doc_numero = item['numero_de_documento_ordenador_del_gasto']
-        departamento = departamentos_map.get(doc_numero, 'Otros')
+    try:
+        # Filtro base para contratos del año
+        contratos_base = Contrato.objects.filter(
+            codigo_entidad=codigo_ent, 
+            fecha_de_firma__range=(datetime(annoinicial, 1, 1), datetime(annofinal, 12, 31, 23, 59, 59))
+        )
         
-        if departamento in departamentos_agrupados:
-            departamentos_agrupados[departamento] += item['total']
-        else:
-            departamentos_agrupados[departamento] = item['total']
-    
-    departamentos_labels = list(departamentos_agrupados.keys())
-    departamentos_data = list(departamentos_agrupados.values())
-    
-    # NUEVO: Datos para gráfico de tipos de contrato
-    tipos_contrato = contratos_base.values('tipo_de_contrato').annotate(
-        total=Count('id')
-    ).order_by('-total')
-    
-    tipos_labels = []
-    tipos_data = []
-    for item in tipos_contrato:
-        if item['tipo_de_contrato']:
-            tipos_labels.append(item['tipo_de_contrato'])
-            tipos_data.append(item['total'])
-    
-    context = {
-        'suma_valor_del_contrato': suma_valor_del_contrato,
-        'numero_de_registros': numero_de_registros,
-        'numero_de_proveedores': numero_de_proveedores,
-        'labels': labels,
-        'data': data,
-        'labels2': labels2,
-        'data2': data2,
-        # Nuevos datos para gráficos
-        'modalidades_labels': modalidades_labels,
-        'modalidades_data': modalidades_data,
-        'departamentos_labels': departamentos_labels,
-        'departamentos_data': departamentos_data,
-        'tipos_labels': tipos_labels,
-        'tipos_data': tipos_data,
-    }
+        print(f"🔍 DEBUG: Total contratos encontrados: {contratos_base.count()}")
+        
+        # Datos existentes
+        suma_valor_del_contrato = contratos_base.aggregate(Sum('valor_del_contrato'))['valor_del_contrato__sum']
+        numero_de_registros = contratos_base.count()
+        numero_de_proveedores = contratos_base.values('documento_proveedor').distinct().count()
+        suma_valor_del_contrato = suma_valor_del_contrato//1000000 if suma_valor_del_contrato else 0
+        
+        # Consulta para obtener el número de contratos por mes SOLO 2025
+        contratos_por_mes = contratos_base.annotate(
+            mes=TruncMonth('fecha_de_firma')
+        ).values('mes').annotate(
+            total=Count('id')
+        ).order_by('mes')
 
-    return render(request, 'contract_dash.html', context)
+        # Preparar datos para Chart.js
+        labels = []
+        data = []
 
+        for item in contratos_por_mes:
+            if item['mes']:
+                labels.append(item['mes'].strftime('%B %Y'))  # Nombre del mes y año
+                data.append(item['total'])
+
+        # Obtener la suma de valores por mes SOLO 2025
+        valores_por_mes = contratos_base.annotate(
+            mes=TruncMonth('fecha_de_firma')
+        ).values('mes').annotate(
+            total_valor=Sum('valor_del_contrato')  # Sumamos los valores
+        ).order_by('mes')
+        
+        labels2 = []
+        data2 = []
+
+        for item in valores_por_mes:
+            if item['mes']:
+                mes = item['mes'].strftime('%B')
+                labels2.append(mes)
+                # Convertimos a millones para mejor visualización
+                valor_en_millones = float(item['total_valor']) / 1000000
+                data2.append(valor_en_millones)
+        
+        # NUEVO: Datos para gráfico de modalidades de contratación
+        modalidades = contratos_base.values('modalidad_de_contratacion').annotate(
+            total=Count('id')
+        ).order_by('-total')
+        
+        modalidades_labels = []
+        modalidades_data = []
+        for item in modalidades:
+            if item['modalidad_de_contratacion']:
+                modalidades_labels.append(item['modalidad_de_contratacion'])
+                modalidades_data.append(item['total'])
+        
+        print(f"🔍 DEBUG: Modalidades encontradas: {len(modalidades_labels)}")
+        
+        # NUEVO: Datos para gráfico de departamentos
+        # Mapeo de números de documento a nombres de departamento
+        departamentos_map = {
+            '1037630032': 'Agricultura',
+            '1042768815': 'Infraestructura', 
+            '1042775303': 'Salud',
+            '1040733595': 'Gobierno',
+            '15329121': 'Seguridad',
+            '1007722573': 'Movilidad',
+            '1042762099': 'Educación',
+            '1042774482': 'Planeación',
+            '43822237': 'Planeación',
+            '1042771578': 'Planeación',
+            '32564314': 'Hacienda',
+            '1234567': 'Participación',
+            '12345': 'Movilidad'
+        }
+        
+        departamentos_contratos = contratos_base.values('numero_de_documento_ordenador_del_gasto').annotate(
+            total=Count('id')
+        )
+        
+        # Agrupar por departamento
+        departamentos_agrupados = {}
+        for item in departamentos_contratos:
+            doc_numero = item['numero_de_documento_ordenador_del_gasto']
+            departamento = departamentos_map.get(doc_numero, 'Otros')
+            
+            if departamento in departamentos_agrupados:
+                departamentos_agrupados[departamento] += item['total']
+            else:
+                departamentos_agrupados[departamento] = item['total']
+        
+        departamentos_labels = list(departamentos_agrupados.keys())
+        departamentos_data = list(departamentos_agrupados.values())
+        
+        # NUEVO: Datos para gráfico de tipos de contrato
+        tipos_contrato = contratos_base.values('tipo_de_contrato').annotate(
+            total=Count('id')
+        ).order_by('-total')
+        
+        tipos_labels = []
+        tipos_data = []
+        for item in tipos_contrato:
+            if item['tipo_de_contrato']:
+                tipos_labels.append(item['tipo_de_contrato'])
+                tipos_data.append(item['total'])
+        
+        print(f"🔍 DEBUG: Tipos de contrato encontrados: {len(tipos_labels)}")
+        
+        context = {
+            'suma_valor_del_contrato': suma_valor_del_contrato,
+            'numero_de_registros': numero_de_registros,
+            'numero_de_proveedores': numero_de_proveedores,
+            'labels': labels,
+            'data': data,
+            'labels2': labels2,
+            'data2': data2,
+            # Nuevos datos para gráficos
+            'modalidades_labels': json.dumps(modalidades_labels),
+            'modalidades_data': json.dumps(modalidades_data),
+            'departamentos_labels': json.dumps(departamentos_labels),
+            'departamentos_data': json.dumps(departamentos_data),
+            'tipos_labels': json.dumps(tipos_labels),
+            'tipos_data': json.dumps(tipos_data),
+        }
+
+        print(f"🔍 DEBUG: Context enviado al template:")
+        print(f"   - modalidades_labels: {modalidades_labels}")
+        print(f"   - modalidades_data: {modalidades_data}")
+        print(f"   - tipos_labels: {tipos_labels}")
+        print(f"   - tipos_data: {tipos_data}")
+
+        return render(request, 'contract_dash.html', context)
+        
+    except Exception as e:
+        print(f"❌ ERROR en vista dashboard: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Contexto vacío para evitar errores
+        context = {
+            'suma_valor_del_contrato': 0,
+            'numero_de_registros': 0,
+            'numero_de_proveedores': 0,
+            'labels': json.dumps([]),
+            'data': json.dumps([]),
+            'labels2': json.dumps([]),
+            'data2': json.dumps([]),
+            'modalidades_labels': json.dumps([]),
+            'modalidades_data': json.dumps([]),
+            'departamentos_labels': json.dumps([]),
+            'departamentos_data': json.dumps([]),
+            'tipos_labels': json.dumps([]),
+            'tipos_data': json.dumps([]),
+        }
+        
+        return render(request, 'contract_dash.html', context)
+
+@login_required
 def expired(request):
-    
     fecha_actual = timezone.now() - timedelta(days=2)
     
     # Filtra los contratos que aún no han vencido
@@ -171,8 +213,8 @@ def expired(request):
     # Renderiza el template con el contexto
     return render(request, 'table_exp.html', {"expired_contract" : expired_contract})
 
+@login_required
 def expirededur(request):
-    
     fecha_actual = timezone.now() - timedelta(days=2)
     
     # Filtra los contratos que aún no han vencido
@@ -184,6 +226,7 @@ def expirededur(request):
     # Renderiza el template con el contexto
     return render(request, 'table_expedur.html', {"expired_contract2" : expired_contract2})
 
+@login_required
 def api(request):
     # Obtener datos de la API
     response = api_consulta()
@@ -208,8 +251,8 @@ def api(request):
             "success": False
         })
 
+@login_required
 def consulta(request):
-
     db_list = Contrato.objects.all()
     return render(request, 'dashboard.html', {"db_list":db_list})
 
@@ -217,6 +260,10 @@ class ContratoListView(ListView):
     model = Contrato
     template_name = 'table_report.html'
     context_object_name = 'contratos'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def get_queryset(self):
         # Obtener parámetros de filtro desde GET y POST
@@ -282,5 +329,6 @@ class ContratoListView(ListView):
         """Manejar POST requests para filtros"""
         return self.get(request, *args, **kwargs)
 
+@login_required
 def emilia(request):
     return render(request, '', {})

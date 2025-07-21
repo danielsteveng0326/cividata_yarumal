@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login | CiviData</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- AdminLTE -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+  
+  <style>
+    .login-page {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .login-box {
+      position: relative;
+      z-index: 1;
+      width: 400px;
+      margin: 0 auto;
+    }
+    
+    .login-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-logo a {
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 300;
+      text-decoration: none;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .login-logo i {
+      font-size: 3rem;
+      background: linear-gradient(45deg, #fff, #f8f9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    
+    .card {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      border: none;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.95);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+      background-size: 200% 100%;
+      animation: gradient 3s linear infinite;
+    }
+    
+    @keyframes gradient {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+    
+    .card-body {
+      padding: 2.5rem;
+    }
+    
+    .login-card-body h4 {
+      color: #2c3e50;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .input-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    
+    .form-control {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 12px 20px 12px 50px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+    
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      background: white;
+      transform: translateY(-2px);
+    }
+    
+    .input-group-text {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #6c757d;
+      z-index: 3;
+      font-size: 18px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 30px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .alert {
+      border: none;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    .alert-danger {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      color: white;
+    }
+    
+    .alert-success {
+      background: linear-gradient(135deg, #00b894, #00a085);
+      color: white;
+    }
+    
+    .footer-text {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 2rem;
+      font-size: 14px;
+    }
+    
+    .loading {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ffffff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+      .login-box {
+        width: 90%;
+        margin: 20px auto;
+      }
+      
+      .card-body {
+        padding: 2rem 1.5rem;
+      }
+      
+      .login-logo a {
+        font-size: 2rem;
+      }
+      
+      .login-logo i {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="hold-transition login-page">
+  <div class="login-box">
+    <!-- Logo y título -->
+    <div class="login-logo">
+      <a href="#">
+        <i class="fas fa-file-contract"></i>
+        <div>
+          <strong>CiviData</strong><br>
+          <span style="font-size: 1.3rem;">Centro Integral de Visualización Inteligente</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card de login -->
+    <div class="card">
+      <div class="card-body login-card-body">
+        <h4><i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión</h4>
+        
+        <!-- Mensajes de Django -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} mr-2"></i>
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Formulario de login -->
+        <form method="post" id="loginForm">
+          {% csrf_token %}
+          
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-user"></i>
+            </span>
+            <input type="text" 
+                   class="form-control" 
+                   name="username" 
+                   placeholder="Usuario" 
+                   required 
+                   autocomplete="username"
+                   autofocus>
+          </div>
+
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-lock"></i>
+            </span>
+            <input type="password" 
+                   class="form-control" 
+                   name="password" 
+                   placeholder="Contraseña" 
+                   required 
+                   autocomplete="current-password">
+          </div>
+
+          <div class="row align-items-center">
+            <div class="col-8">
+              <div class="icheck-primary">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember" style="font-weight: normal; color: #6c757d;">
+                  Recordarme
+                </label>
+              </div>
+            </div>
+            <div class="col-5">
+              <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+                <span class="btn-text">
+                  <i class="fas fa-sign-in-alt mr-1"></i>
+                  Entrar
+                </span>
+                <div class="loading">
+                  <div class="spinner"></div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Efecto de carga en el botón
+      $('#loginForm').on('submit', function() {
+        const btn = $('#loginBtn');
+        const btnText = btn.find('.btn-text');
+        const loading = btn.find('.loading');
+        
+        btn.prop('disabled', true);
+        btnText.hide();
+        loading.show();
+        
+        // Simular pequeña demora para UX
+        setTimeout(() => {
+          $(this)[0].submit();
+        }, 300);
+      });
+      
+      // Auto-hide alerts después de 5 segundos
+      setTimeout(function() {
+        $('.alert').fadeOut('slow');
+      }, 5000);
+      
+      // Efecto focus en inputs
+      $('.form-control').on('focus', function() {
+        $(this).parent().find('.input-group-text i').addClass('text-primary');
+      }).on('blur', function() {
+        $(this).parent().find('.input-group-text i').removeClass('text-primary');
+      });
+      
+      // Validación básica del frontend
+      $('#loginForm').on('submit', function(e) {
+        const username = $('input[name="username"]').val().trim();
+        const password = $('input[name="password"]').val().trim();
+        
+        if (!username || !password) {
+          e.preventDefault();
+          
+          // Mostrar alerta
+          const alertHtml = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              Por favor complete todos los campos
+              <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+              </button>
+            </div>
+          `;
+          
+          $('.login-card-body h4').after(alertHtml);
+          
+          // Reset botón
+          const btn = $('#loginBtn');
+          btn.prop('disabled', false);
+          btn.find('.btn-text').show();
+          btn.find('.loading').hide();
+          
+          return false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

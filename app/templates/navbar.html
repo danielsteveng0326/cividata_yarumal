@@ -1,54 +1,211 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TerriGov - Yarumal</title>
+  <title>CiviData - Yarumal</title>
+  
+  <!-- CSS ESENCIALES SOLAMENTE -->
   {% block extra_css %}{% endblock %}
+  
+  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+  
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{% static 'lib/adminlt320/plugins/fontawesome-free/css/all.min.css' %}">
+  
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Tempusdominus Bootstrap 4 -->
-  <link rel="stylesheet" href="lib/adminlt320/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="lib/adminlt320/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- JQVMap -->
-  <link rel="stylesheet" href="lib/adminlt320/plugins/jqvmap/jqvmap.min.css">
-  <!-- overlayScrollbars -->
+  
+  <!-- overlayScrollbars - SOLO LOS QUE EXISTEN -->
   <link rel="stylesheet" href="{% static 'lib/adminlt320/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
-  <!-- Daterange picker -->
-  <link rel="stylesheet" href="lib/adminlt320/plugins/daterangepicker/daterangepicker.css">
-  <!-- summernote -->
-  <link rel="stylesheet" href="lib/adminlt320/plugins/summernote/summernote-bs4.min.css">
-  <!-- Theme style -->
+  
+  <!-- Theme style - PRINCIPAL -->
   <link rel="stylesheet" href="{% static 'lib/adminlt320/dist/css/adminlte.min.css' %}">
   <link rel="stylesheet" href="{% static 'lib/adminlt320/dist/css/clock.css' %}">
-  <script data-cfasync="false" nonce="8434774a-4229-468b-a894-db9ae3a1d8f9">try{(function(w,d){!function(cJ,cK,cL,cM){if(cJ.zaraz)console.error("zaraz is loaded twice");else{cJ[cL]=cJ[cL]||{};cJ[cL].executed=[];cJ.zaraz={deferred:[],listeners:[]};cJ.zaraz._v="5815";cJ.zaraz._n="8434774a-4229-468b-a894-db9ae3a1d8f9";cJ.zaraz.q=[];cJ.zaraz._f=function(cN){return async function(){var cO=Array.prototype.slice.call(arguments);cJ.zaraz.q.push({m:cN,a:cO})}};for(const cP of["track","set","debug"])cJ.zaraz[cP]=cJ.zaraz._f(cP);cJ.zaraz.init=()=>{var cQ=cK.getElementsByTagName(cM)[0],cR=cK.createElement(cM),cS=cK.getElementsByTagName("title")[0];cS&&(cJ[cL].t=cK.getElementsByTagName("title")[0].text);cJ[cL].x=Math.random();cJ[cL].w=cJ.screen.width;cJ[cL].h=cJ.screen.height;cJ[cL].j=cJ.innerHeight;cJ[cL].e=cJ.innerWidth;cJ[cL].l=cJ.location.href;cJ[cL].r=cK.referrer;cJ[cL].k=cJ.screen.colorDepth;cJ[cL].n=cK.characterSet;cJ[cL].o=(new Date).getTimezoneOffset();if(cJ.dataLayer)for(const cT of Object.entries(Object.entries(dataLayer).reduce(((cU,cV)=>({...cU[1],...cV[1]})),{})))zaraz.set(cT[0],cT[1],{scope:"page"});cJ[cL].q=[];for(;cJ.zaraz.q.length;){const cW=cJ.zaraz.q.shift();cJ[cL].q.push(cW)}cR.defer=!0;for(const cX of[localStorage,sessionStorage])Object.keys(cX||{}).filter((cZ=>cZ.startsWith("_zaraz_"))).forEach((cY=>{try{cJ[cL]["z_"+cY.slice(7)]=JSON.parse(cX.getItem(cY))}catch{cJ[cL]["z_"+cY.slice(7)]=cX.getItem(cY)}}));cR.referrerPolicy="origin";cR.src="/cdn-cgi/zaraz/s.js?z="+btoa(encodeURIComponent(JSON.stringify(cJ[cL])));cQ.parentNode.insertBefore(cR,cQ)};["complete","interactive"].includes(cK.readyState)?zaraz.init():cJ.addEventListener("DOMContentLoaded",zaraz.init)}}(w,d,"zarazData","script");window.zaraz._p=async bb=>new Promise((bc=>{if(bb){bb.e&&bb.e.forEach((bd=>{try{const be=d.querySelector("script[nonce]"),bf=be?.nonce||be?.getAttribute("nonce"),bg=d.createElement("script");bf&&(bg.nonce=bf);bg.innerHTML=bd;bg.onload=()=>{d.head.removeChild(bg)};d.head.appendChild(bg)}catch(bh){console.error(`Error executing script: ${bd}\n`,bh)}}));Promise.allSettled((bb.f||[]).map((bi=>fetch(bi[0],bi[1]))))}bc()}));zaraz._p({"e":["(function(w,d){})(window,document)"]});})(window,document)}catch(e){throw fetch("/cdn-cgi/zaraz/t"),e;};</script> 
+  
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  
+  <style>
+    /* Estilos para el área de usuario */
+    .user-panel {
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      border-radius: 8px;
+      margin: 10px;
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .user-panel .info {
+      color: #c2c7d0;
+      font-weight: 500;
+    }
+    
+    .user-panel .info a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .user-panel .info small {
+      display: block;
+      color: #adb5bd;
+      font-size: 0.75rem;
+      margin-top: 2px;
+    }
+    
+    .navbar-nav .nav-item.dropdown .dropdown-menu {
+      border: none;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+    
+    .navbar-nav .dropdown-item {
+      padding: 10px 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-nav .dropdown-item:hover {
+      background: #f8f9fa;
+      transform: translateX(5px);
+    }
+    
+    .user-status {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #28a745;
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+    
+    /* Mejorar el aspecto del avatar en sidebar */
+    .user-avatar {
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    /* Estilos adicionales para SweetAlert */
+    .swal2-popup-custom {
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .swal2-toast {
+      border-radius: 8px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+  </style>
 </head>
-
 
 <body class="hold-transition sidebar-mini layout-fixed">
 <!-- Site wrapper -->
 <div class="wrapper">
   
+  <!-- Navbar superior -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+          <i class="fas fa-bars"></i>
+        </a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="{% url 'index' %}" class="nav-link">
+          <i class="fas fa-home mr-1"></i>Inicio
+        </a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Información del usuario logueado -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+          <i class="fas fa-user-circle mr-2" style="font-size: 1.2rem;"></i>
+          <span class="user-status"></span>
+          <span class="d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span>
+          <i class="fas fa-angle-down ml-1"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right">
+          <div class="dropdown-header">
+            <i class="fas fa-user mr-2"></i>
+            <strong>{{ user.get_full_name|default:user.username }}</strong>
+            <small class="text-muted d-block">{{ user.email|default:"Sin email" }}</small>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-user-edit mr-2 text-primary"></i>
+            Mi Perfil
+          </a>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-cog mr-2 text-secondary"></i>
+            Configuración
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="{% url 'login:logout' %}" class="dropdown-item text-danger" id="logout-btn">
+            <i class="fas fa-sign-out-alt mr-2"></i>
+            Cerrar Sesión
+          </a>
+        </div>
+      </li>
+      
+      <!-- Control del sidebar -->
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar main-sidebar-custom sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href={% url 'index' %} class="brand-link">
+    <a href="{% url 'index' %}" class="brand-link">
       <img src="{% static 'lib/adminlt320/dist/img/logoyar.png' %}" alt="Logo" class="brand-image elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">Municipio de Yarumal</span>
     </a>
 
     <!-- Sidebar -->
     <div class="sidebar">
-      <!-- Sidebar user (optional) -->
+      <!-- Panel de usuario en sidebar -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <div class="user-avatar">
+            <i class="fas fa-user-circle" style="font-size: 2.1rem; color: #fff; margin-top: 5px;"></i>
+          </div>
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">
+            {{ user.get_full_name|default:user.username }}
+          </a>
+        </div>
+      </div>
+
+      <!-- Reloj del sistema -->
       <div class="clock-container">
         <div class="clock-time" id="clock-time"></div>
         <div class="clock-date" id="clock-date"></div>
@@ -57,7 +214,7 @@
       <!-- SidebarSearch Form -->
       <div class="form-inline">
         <div class="input-group" data-widget="sidebar-search">
-          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+          <input class="form-control form-control-sidebar" type="search" placeholder="Buscar..." aria-label="Search">
           <div class="input-group-append">
             <button class="btn btn-sidebar">
               <i class="fas fa-search fa-fw"></i>
@@ -69,11 +226,10 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+          <!-- Menú de Contratación -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-copy"></i>
+              <i class="nav-icon fas fa-file-contract"></i>
               <p>
                 Contratación
                 <i class="right fas fa-angle-left"></i>
@@ -81,62 +237,33 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href={% url 'dashboard' %} class="nav-link">
+                <a href="{% url 'dashboard' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Dashboard</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href={% url 'expired' %} class="nav-link">
+                <a href="{% url 'expired' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Vencimientos Contratos</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href={% url 'expirededur' %} class="nav-link">
+                <a href="{% url 'expirededur' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Vencimientos Edenorte</p>
                 </a>
               </li>
-
               <li class="nav-item">
-                <a href={% url 'contratos_list' %} class="nav-link">
+                <a href="{% url 'contratos_list' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Reportes</p>
                 </a>
               </li>
             </ul>
           </li>
-        {% comment %}
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>
-               Plan de Desarrollo
-                <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="../layout/top-nav.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../layout/top-nav-sidebar.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Documentos</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../layout/boxed.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Plan de Acción</p>
-                </a>
-              </li>           
-            </ul>
-          </li>
+          {% comment %}
+          <!-- Gestión de la Calidad -->
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-chart-pie"></i>
@@ -147,34 +274,24 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="../charts/chartjs.html" class="nav-link">
+                <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>ChartJS</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="../charts/flot.html" class="nav-link">
+                <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Flot</p>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="../charts/inline.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Inline</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../charts/uplot.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>uPlot</p>
-                </a>
-              </li>
             </ul>
           </li>
+
+          <!-- Geoportal -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-tree"></i>
+              <i class="nav-icon fas fa-map-marked-alt"></i>
               <p>
                 Geoportal
                 <i class="fas fa-angle-left right"></i>
@@ -182,58 +299,18 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="../UI/general.html" class="nav-link">
+                <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>General</p>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="../UI/icons.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Icons</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../UI/buttons.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Buttons</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../UI/sliders.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Sliders</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../UI/modals.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Modals & Alerts</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../UI/navbar.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Navbar & Tabs</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../UI/timeline.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Timeline</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../UI/ribbons.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Ribbons</p>
-                </a>
-              </li>
             </ul>
           </li>
+
+          <!-- Observatorios -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-edit"></i>
+              <i class="nav-icon fas fa-binoculars"></i>
               <p>
                 Observatorios
                 <i class="fas fa-angle-left right"></i>
@@ -241,34 +318,18 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="../forms/general.html" class="nav-link">
+                <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>General Elements</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../forms/advanced.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Advanced Elements</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../forms/editors.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Editors</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../forms/validation.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Validation</p>
+                  <p>Elementos Generales</p>
                 </a>
               </li>
             </ul>
           </li>
+
+          <!-- Políticas Públicas -->
           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-table"></i>
+              <i class="nav-icon fas fa-balance-scale"></i>
               <p>
                 Políticas Públicas
                 <i class="fas fa-angle-left right"></i>
@@ -276,101 +337,71 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="../tables/simple.html" class="nav-link">
+                <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Simple Tables</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../tables/data.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>DataTables</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../tables/jsgrid.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>jsGrid</p>
+                  <p>Tablas Simples</p>
                 </a>
               </li>
             </ul>
           </li>
+
+          <!-- Emil-IA Chatbot -->
           <li class="nav-item">
-            <a href="../widgets.html" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
+            <a href="{% url 'chatbot:chat' %}" class="nav-link">
+              <i class="nav-icon fas fa-robot"></i>
               <p>
-                Widgets
-                <span class="right badge badge-danger">New</span>
+                Emil-IA
+                <span class="right badge badge-success">AI</span>
               </p>
             </a>
           </li>
-        {% endcomment %}
+          {% endcomment %}
+          <!-- Separador -->
+          <li class="nav-header">SISTEMA</li>
+
+          <!-- Configuración -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-cogs"></i>
+              <p>Configuración</p>
+            </a>
+          </li>
+
+          <!-- Cerrar Sesión en Sidebar -->
+          <li class="nav-item">
+            <a href="{% url 'login:logout' %}" class="nav-link text-danger" id="sidebar-logout">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Cerrar Sesión</p>
+            </a>
+          </li>
         </ul>
       </nav>
-      <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
 
     <div class="sidebar-custom">
       <a href="#" class="btn btn-link"><i class="fas fa-cogs"></i></a>
-      <a href="#" class="btn btn-secondary hide-on-collapse pos-right">Help</a>
+      <a href="#" class="btn btn-secondary hide-on-collapse pos-right">Ayuda</a>
     </div>
-    <!-- /.sidebar-custom -->
   </aside>
 
-  <!-- Content Wrapper. Contains page content -->
+  <!-- Content Wrapper -->
   <div class="content-wrapper">
-    
     {% block content %}
-
+    <!-- El contenido específico de cada página va aquí -->
     {% endblock %}
-    
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
 
+  <!-- Footer -->
   {% include 'footer.html' %}
-
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
 </div>
-<!-- ./wrapper -->
 
-<!-- jQuery -->
+<!-- SCRIPTS ESENCIALES SOLAMENTE -->
 <script src="{% static 'lib/adminlt320/plugins/jquery/jquery.min.js' %}"></script>
-<!-- jQuery UI 1.11.4 -->
-<script src="{% static 'lib/adminlt320/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-<script>
-  $.widget.bridge('uibutton', $.ui.button)
-</script>
-<!-- Bootstrap 4 -->
 <script src="{% static 'lib/adminlt320/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<!-- ChartJS -->
-<script src="{% static 'lib/adminlt320/plugins/chart.js/Chart.min.js' %}"></script>
-<!-- Sparkline -->
-<script src="{% static 'lib/adminlt320/plugins/sparklines/sparkline.js' %}"></script>
-<!-- JQVMap -->
-<script src="{% static 'lib/adminlt320/plugins/jqvmap/jquery.vmap.min.js' %}"></script>
-<script src="{% static 'lib/adminlt320/plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
-<!-- jQuery Knob Chart -->
-<script src="{% static 'lib/adminlt320/plugins/jquery-knob/jquery.knob.min.js' %}"></script>
-<!-- daterangepicker -->
-<script src="{% static 'lib/adminlt320/plugins/moment/moment.min.js' %}"></script>
-<script src="{% static 'lib/adminlt320/plugins/daterangepicker/daterangepicker.js' %}"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-<script src="{% static 'lib/adminlt320/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-<!-- Summernote -->
-<script src="{% static 'lib/adminlt320/plugins/summernote/summernote-bs4.min.js' %}"></script>
-<!-- overlayScrollbars -->
-<script src="{% static 'lib/adminlt320/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
-<!-- AdminLTE App -->
 <script src="{% static 'lib/adminlt320/dist/js/adminlte.min.js' %}"></script>
-<!-- Admin Clock .js  -->
 <script src="{% static 'lib/adminlt320/dist/js/clock.js' %}"></script>
+
+<!-- DataTables -->
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
@@ -380,6 +411,108 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Script personalizado para logout -->
+<script>
+$(document).ready(function() {
+  // Confirmar logout para ambos botones (navbar y sidebar)
+  $('#logout-btn, #sidebar-logout').on('click', function(e) {
+    e.preventDefault();
+    
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      text: '¿Estás seguro de que quieres salir del sistema?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="fas fa-sign-out-alt"></i> Sí, cerrar sesión',
+      cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
+      reverseButtons: true,
+      customClass: {
+        popup: 'swal2-popup-custom'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Mostrar loading
+        Swal.fire({
+          title: 'Cerrando sesión...',
+          text: 'Por favor espera',
+          icon: 'info',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+        // Simular pequeña demora y redirigir
+        setTimeout(() => {
+          window.location.href = '{% url "login:logout" %}';
+        }, 1000);
+      }
+    });
+  });
+  
+  // Mostrar información del usuario logueado en consola
+  const userName = '{{ user.get_full_name|default:user.username }}';
+  const userEmail = '{{ user.email|default:"Sin email" }}';
+  
+  console.log('🟢 Sistema de autenticación activo');
+  console.log('👤 Usuario:', userName);
+  console.log('📧 Email:', userEmail);
+  console.log('🔐 Sesión iniciada correctamente');
+  
+  // Tooltip para elementos con title
+  $('[data-toggle="tooltip"]').tooltip();
+  
+  // Mensaje de bienvenida (solo una vez por sesión)
+  if (!sessionStorage.getItem('welcome_shown')) {
+    setTimeout(() => {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: `¡Bienvenido ${userName}!`,
+        text: 'Sesión iniciada correctamente',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
+      sessionStorage.setItem('welcome_shown', 'true');
+    }, 500);
+  }
+});
+
+// Función para verificar estado de autenticación
+function checkAuthStatus() {
+  fetch('{% url "login:check_auth" %}')
+    .then(response => response.json())
+    .then(data => {
+      if (!data.authenticated) {
+        Swal.fire({
+          title: 'Sesión expirada',
+          text: 'Tu sesión ha expirado. Serás redirigido al login.',
+          icon: 'warning',
+          confirmButtonText: 'Entendido'
+        }).then(() => {
+          window.location.href = '{% url "login:login" %}';
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error verificando autenticación:', error);
+    });
+}
+
+// Verificar autenticación cada 30 minutos
+setInterval(checkAuthStatus, 30 * 60 * 1000);
+</script>
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>

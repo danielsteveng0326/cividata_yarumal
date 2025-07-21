@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'login.middleware.LoginRequiredMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -210,3 +211,23 @@ else:
     print("🔧 Modo desarrollo: configuraciones de seguridad relajadas")
 
 print(f"✅ Configuración cargada - DEBUG: {DEBUG}, STATIC_ROOT: {STATIC_ROOT}")
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/contratacion/index/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+
+SESSION_COOKIE_AGE = 3600  # 1 hora
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_SECURE = not DEBUG  # True en producción
+SESSION_COOKIE_HTTPONLY = True
+
+
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'error',
+}

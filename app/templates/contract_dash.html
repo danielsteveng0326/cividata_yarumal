@@ -1,514 +1,523 @@
 {% extends 'navbar.html' %}
 
 {% block content %}
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1 class="m-0">Dashboard - Año 2025</h1>
-        </div>
-        <!-- /.col -->
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item">
-              <a href="#">Home</a>
-            </li>
-            <li class="breadcrumb-item active">Dashboard 2025</li>
-          </ol>
-        </div>
-        <!-- /.col -->
+<!-- Content Header (Page header) -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Dashboard de Contratación</h1>
       </div>
-      <!-- /.row -->
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Inicio</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </div>
     </div>
-    <!-- /.container-fluid -->
   </div>
-  <!-- /.content-header -->
+</div>
 
-  <!-- Main content -->
-  <section class="content">
-    <div class="container-fluid">
-      <!-- Small boxes (cajas superiores) -->
-      <div class="row">
-        <div class="col-lg-4 col-6">
-          <!-- small box -->
-          <div class="small-box bg-info">
-            <div class="inner">
-              <h3>{{ numero_de_registros }}</h3>
-
-              <h4>Contratos suscritos 2025</h4>
-            </div>
-            <div class="icon">
-              <i class="ion ion-bag"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3>{{ numero_de_registros }}</h3>
+            <p>Contratos Registrados</p>
           </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-4 col-6">
-          <!-- small box -->
-          <div class="small-box bg-success">
-            <div class="inner">
-              <h3>${{ suma_valor_del_contrato }}</h3>
-
-              <h4>Millones ejecutados 2025</h4>
-            </div>
-            <div class="icon">
-              <i class="ion ion-stats-bars"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+          <div class="icon">
+            <i class="fas fa-file-contract"></i>
           </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-4 col-6">
-          <!-- small box -->
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h3>{{ numero_de_proveedores }}</h3>
-
-              <h4>Proveedores 2025</h4>
-            </div>
-            <div class="icon">
-              <i class="ion ion-person-add"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-      </div>
-      <!-- /.row -->
-
-      <!-- Gráficos existentes -->
-      <div class="row">
-        <!-- STACKED BAR CHART CONTRACTS FOR MONTHS -->
-        <div class="col-md-6">
-          <div class="card card-success">
-            <div class="card-header">
-              <h3 class="card-title">Número de Contratos por Mes - Año 2025</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="chart">
-                <canvas id="stackedBarChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- VALUE BAR CHART VALUE FOR MONTHS -->
-        <div class="col-md-6">
-          <div class="card card-success">
-            <div class="card-header">
-              <h3 class="card-title">Valor Contratado por Mes - Año 2025</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="chart">
-                <canvas id="valueBarChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
-              </div>
-            </div>
-          </div>
+          <a href="{% url 'contratos_list' %}" class="small-box-footer">Ver detalle <i class="fas fa-arrow-circle-right"></i></a>
         </div>
       </div>
 
-      <!-- Nuevos gráficos - Fila 1 -->
-      <div class="row">
-        <!-- Gráfico de Modalidades de Contratación -->
-        <div class="col-md-6">
-          <div class="card card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Distribución por Modalidad de Contratación</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="chart">
-                <canvas id="modalidadesChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
-              </div>
-            </div>
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3>{{ suma_valor_del_contrato }}<sup style="font-size: 20px"></sup></h3>
+            <p>Valor Total (Millones)</p>
           </div>
-        </div>
-
-        <!-- Gráfico de Tipos de Contrato -->
-        <div class="col-md-6">
-          <div class="card card-warning">
-            <div class="card-header">
-              <h3 class="card-title">Tipos de Contrato</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="chart">
-                <canvas id="tiposChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
-              </div>
-            </div>
+          <div class="icon">
+            <i class="fas fa-dollar-sign"></i>
           </div>
+          <a href="{% url 'contratos_list' %}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
         </div>
       </div>
 
-      <!-- Gráfico de Departamentos - Fila 2 -->
-      <div class="row">
-        <div class="col-md-12">
-          <div class="card card-info">
-            <div class="card-header">
-              <h3 class="card-title">Contratos por Departamento/Secretaría</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="chart">
-                <canvas id="departamentosChart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%;"></canvas>
-              </div>
-            </div>
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+          <div class="inner">
+            <h3>{{ numero_de_proveedores }}</h3>
+            <p>Proveedores</p>
           </div>
+          <div class="icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <a href="{% url 'contratos_list' %}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
         </div>
       </div>
 
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+          <div class="inner">
+            <h3>2025</h3>
+            <p>Año Vigente</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <a href="{% url 'contratos_list' %}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
     </div>
-    <!-- /.container-fluid -->
-  </section>
-  <!-- /.content -->
+
+    <!-- Gráficos principales -->
+    <div class="row">
+      <!-- Gráfico de contratos por mes -->
+      <div class="col-md-6">
+        <div class="card card-success">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-chart-bar mr-2"></i>
+              Número de Contratos por Mes - 2025
+            </h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart">
+              <canvas id="stackedBarChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico de valor por mes -->
+      <div class="col-md-6">
+        <div class="card card-success">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-dollar-sign mr-2"></i>
+              Valor Contratado por Mes - 2025
+            </h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart">
+              <canvas id="valueBarChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos adicionales -->
+    <div class="row">
+      <!-- Gráfico de modalidades -->
+      <div class="col-md-6">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-chart-pie mr-2"></i>
+              Distribución por Modalidad de Contratación
+            </h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart">
+              <canvas id="modalidadesChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico de tipos de contrato -->
+      <div class="col-md-6">
+        <div class="card card-warning">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-list mr-2"></i>
+              Tipos de Contrato
+            </h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart">
+              <canvas id="tiposChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de departamentos -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-info">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-building mr-2"></i>
+              Contratos por Departamento/Secretaría
+            </h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart">
+              <canvas id="departamentosChart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js desde CDN CORRECTO para evitar conflictos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 Iniciando carga de gráficos del dashboard...');
   
-  {% block javascript %}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Diccionario para traducir meses
-      const mesesEspanol = {
-          'January': 'Enero',
-          'February': 'Febrero',
-          'March': 'Marzo',
-          'April': 'Abril',
-          'May': 'Mayo',
-          'June': 'Junio',
-          'July': 'Julio',
-          'August': 'Agosto',
-          'September': 'Septiembre',
-          'October': 'Octubre',
-          'November': 'Noviembre',
-          'December': 'Diciembre'
-      };
-      
-      // Función para traducir la fecha
-      function traducirFecha(fecha) {
-          const partes = fecha.split(' ');
-          const mes = partes[0];
-          return mesesEspanol[mes] || mes;
+  // Verificar que Chart.js esté disponible
+  if (typeof Chart === 'undefined') {
+    console.error('❌ Chart.js no está cargado');
+    return;
+  }
+  
+  console.log('✅ Chart.js cargado correctamente');
+  
+  // Datos del backend
+  const labels = {{ labels|safe }};
+  const data = {{ data|safe }};
+  const labels2 = {{ labels2|safe }};
+  const data2 = {{ data2|safe }};
+  const modalidades_labels = {{ modalidades_labels|safe }};
+  const modalidades_data = {{ modalidades_data|safe }};
+  const tipos_labels = {{ tipos_labels|safe }};
+  const tipos_data = {{ tipos_data|safe }};
+  const departamentos_labels = {{ departamentos_labels|safe }};
+  const departamentos_data = {{ departamentos_data|safe }};
+  
+  console.log('📊 Datos recibidos:', {
+    labels: labels,
+    data: data,
+    modalidades: modalidades_labels.length,
+    tipos: tipos_labels.length,
+    departamentos: departamentos_labels.length
+  });
+
+  // Diccionario para traducir meses
+  const mesesEspanol = {
+    'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo',
+    'April': 'Abril', 'May': 'Mayo', 'June': 'Junio',
+    'July': 'Julio', 'August': 'Agosto', 'September': 'Septiembre',
+    'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'
+  };
+  
+  function traducirFecha(fecha) {
+    const partes = fecha.split(' ');
+    const mes = partes[0];
+    return mesesEspanol[mes] || mes;
+  }
+
+  // Configuración común para todos los gráficos
+  const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top'
       }
-      
-      // Primer gráfico - Cantidad de contratos (Solo 2025)
-      var ctxCount = document.getElementById('stackedBarChart').getContext('2d');
-      var dataCount = {
-          labels: {{ labels|safe }}.map(fecha => traducirFecha(fecha)),
-          datasets: [{
-              label: 'Contratos 2025',
-              data: {{ data|safe }},
-              backgroundColor: 'rgb(54, 162, 235)',
-              borderColor: 'rgb(54, 162, 235)',
-              borderWidth: 1,
-              hoverBackgroundColor: 'rgba(54, 162, 235, 0.8)'
-          }]
-      };
-      
-      var stackedBarChart = new Chart(ctxCount, {
-          type: 'bar',
-          data: dataCount,
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                  y: {
-                      beginAtZero: true,
-                      ticks: {
-                          stepSize: 10,
-                          font: {
-                              size: 12
-                          }
-                      },
-                      grid: {
-                          color: 'rgba(0, 0, 0, 0.1)'
-                      }
-                  },
-                  x: {
-                      ticks: {
-                          maxRotation: 45,
-                          minRotation: 45,
-                          font: {
-                              size: 12
-                          },
-                          padding: 10
-                      },
-                      grid: {
-                          display: false
-                      }
-                  }
-              },
-              plugins: {
-                  legend: {
-                      position: 'top'
-                  },
-                  title: {
-                      display: true,
-                      text: 'Contratos por Mes - Año 2025'
-                  }
-              }
-          }
-      });
+    }
+  };
 
-      // Segundo gráfico - Valor de contratos (Solo 2025)
-      var ctxValue = document.getElementById('valueBarChart').getContext('2d');
-      var dataValue = {
-          labels: {{ labels2|safe }}.map(fecha => traducirFecha(fecha)),
-          datasets: [{
-              label: 'Valor Contratado 2025 (Millones)',
-              data: {{ data2|safe }},
-              backgroundColor: 'rgb(54, 162, 235)',
-              borderColor: 'rgb(54, 162, 235)',
-              borderWidth: 1,
-              hoverBackgroundColor: 'rgba(54, 162, 235, 0.8)'
-          }]
-      };
-      
-      var valueBarChart = new Chart(ctxValue, {
-          type: 'bar',
-          data: dataValue,
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                  y: {
-                      beginAtZero: true,
-                      ticks: {
-                          callback: function(value) {
-                              return '$ ' + value.toLocaleString('es-CO') + ' M';
-                          },
-                          font: {
-                              size: 12
-                          }
-                      },
-                      grid: {
-                          color: 'rgba(0, 0, 0, 0.1)'
-                      }
-                  },
-                  x: {
-                      ticks: {
-                          maxRotation: 45,
-                          minRotation: 45,
-                          font: {
-                              size: 12
-                          },
-                          padding: 10
-                      },
-                      grid: {
-                          display: false
-                      }
-                  }
-              },
-              plugins: {
-                  legend: {
-                      position: 'top'
-                  },
-                  title: {
-                      display: true,
-                      text: 'Valor Total Contratado por Mes - Año 2025'
-                  },
-                  tooltip: {
-                      callbacks: {
-                          label: function(context) {
-                              let value = context.raw;
-                              return `$ ${value.toLocaleString('es-CO')} millones`;
-                          }
-                      }
-                  }
-              }
-          }
-      });
-
-      // NUEVO: Gráfico de modalidades de contratación (Dona)
-      var ctxModalidades = document.getElementById('modalidadesChart').getContext('2d');
-      var modalidadesChart = new Chart(ctxModalidades, {
-          type: 'doughnut',
-          data: {
-              labels: {{ modalidades_labels|safe }},
-              datasets: [{
-                  data: {{ modalidades_data|safe }},
-                  backgroundColor: [
-                      '#007bff',
-                      '#0056b3', 
-                      '#003d82',
-                      '#002952',
-                      '#001a3a',
-                      '#001122'
-                  ],
-                  borderWidth: 2,
-                  borderColor: '#fff'
-              }]
+  // 1. Gráfico de contratos por mes
+  try {
+    const ctxCount = document.getElementById('stackedBarChart').getContext('2d');
+    new Chart(ctxCount, {
+      type: 'bar',
+      data: {
+        labels: labels.map(fecha => traducirFecha(fecha)),
+        datasets: [{
+          label: 'Contratos 2025',
+          data: data,
+          backgroundColor: 'rgba(54, 162, 235, 0.8)',
+          borderColor: 'rgb(54, 162, 235)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 10 }
           },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                  legend: {
-                      position: 'bottom',
-                      labels: {
-                          padding: 20,
-                          usePointStyle: true
-                      }
-                  },
-                  title: {
-                      display: true,
-                      text: 'Distribución por Modalidad'
-                  },
-                  tooltip: {
-                      callbacks: {
-                          label: function(context) {
-                              const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                              const percentage = ((context.raw / total) * 100).toFixed(1);
-                              return context.label + ': ' + context.raw + ' (' + percentage + '%)';
-                          }
-                      }
-                  }
-              }
+          x: {
+            ticks: { maxRotation: 45, minRotation: 45 }
           }
-      });
-
-      // NUEVO: Gráfico de tipos de contrato (Barras verticales)
-      var ctxTipos = document.getElementById('tiposChart').getContext('2d');
-      var tiposChart = new Chart(ctxTipos, {
-          type: 'bar',
-          data: {
-              labels: {{ tipos_labels|safe }},
-              datasets: [{
-                  label: 'Cantidad de Contratos',
-                  data: {{ tipos_data|safe }},
-                  backgroundColor: [
-                      '#fd7e14',
-                      '#e8590c',
-                      '#d44100',
-                      '#bf3900',
-                      '#aa3200',
-                      '#952b00'
-                  ],
-                  borderColor: [
-                      '#fd7e14',
-                      '#e8590c', 
-                      '#d44100',
-                      '#bf3900',
-                      '#aa3200',
-                      '#952b00'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                  y: {
-                      beginAtZero: true,
-                      ticks: {
-                          stepSize: 1
-                      }
-                  },
-                  x: {
-                      ticks: {
-                          maxRotation: 45,
-                          minRotation: 45
-                      }
-                  }
-              },
-              plugins: {
-                  legend: {
-                      display: false
-                  },
-                  title: {
-                      display: true,
-                      text: 'Distribución por Tipo de Contrato'
-                  }
-              }
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          title: {
+            display: true,
+            text: 'Contratos por Mes - Año 2025'
           }
-      });
-
-      // NUEVO: Gráfico de departamentos (Radar/Polar)
-      var ctxDepartamentos = document.getElementById('departamentosChart').getContext('2d');
-      var departamentosChart = new Chart(ctxDepartamentos, {
-          type: 'polarArea',
-          data: {
-              labels: {{ departamentos_labels|safe }},
-              datasets: [{
-                  data: {{ departamentos_data|safe }},
-                  backgroundColor: [
-                      'rgba(255, 99, 132, 0.6)',
-                      'rgba(54, 162, 235, 0.6)',
-                      'rgba(255, 205, 86, 0.6)',
-                      'rgba(75, 192, 192, 0.6)',
-                      'rgba(153, 102, 255, 0.6)',
-                      'rgba(255, 159, 64, 0.6)',
-                      'rgba(199, 199, 199, 0.6)',
-                      'rgba(83, 102, 255, 0.6)',
-                      'rgba(255, 99, 255, 0.6)',
-                      'rgba(99, 255, 132, 0.6)'
-                  ],
-                  borderColor: [
-                      'rgb(255, 99, 132)',
-                      'rgb(54, 162, 235)',
-                      'rgb(255, 205, 86)',
-                      'rgb(75, 192, 192)',
-                      'rgb(153, 102, 255)',
-                      'rgb(255, 159, 64)',
-                      'rgb(199, 199, 199)',
-                      'rgb(83, 102, 255)',
-                      'rgb(255, 99, 255)',
-                      'rgb(99, 255, 132)'
-                  ],
-                  borderWidth: 2
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                  legend: {
-                      position: 'right',
-                      labels: {
-                          padding: 20,
-                          usePointStyle: true
-                      }
-                  },
-                  title: {
-                      display: true,
-                      text: 'Contratos por Departamento/Secretaría'
-                  },
-                  tooltip: {
-                      callbacks: {
-                          label: function(context) {
-                              return context.label + ': ' + context.raw + ' contratos';
-                          }
-                      }
-                  }
-              },
-              scales: {
-                  r: {
-                      beginAtZero: true,
-                      ticks: {
-                          stepSize: 1
-                      }
-                  }
-              }
-          }
-      });
-
+        }
+      }
     });
-  </script>
-  {% endblock %}
+    console.log('✅ Gráfico de contratos por mes creado');
+  } catch (error) {
+    console.error('❌ Error creando gráfico de contratos:', error);
+  }
+
+  // 2. Gráfico de valor por mes
+  try {
+    const ctxValue = document.getElementById('valueBarChart').getContext('2d');
+    new Chart(ctxValue, {
+      type: 'bar',
+      data: {
+        labels: labels2.map(fecha => traducirFecha(fecha)),
+        datasets: [{
+          label: 'Valor Contratado (Millones)',
+          data: data2,
+          backgroundColor: 'rgba(75, 192, 192, 0.8)',
+          borderColor: 'rgb(75, 192, 192)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return '$ ' + value.toLocaleString('es-CO') + ' M';
+              }
+            }
+          },
+          x: {
+            ticks: { maxRotation: 45, minRotation: 45 }
+          }
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          title: {
+            display: true,
+            text: 'Valor Total Contratado por Mes - Año 2025'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let value = context.raw;
+                return `$ ${value.toLocaleString('es-CO')} millones`;
+              }
+            }
+          }
+        }
+      }
+    });
+    console.log('✅ Gráfico de valor por mes creado');
+  } catch (error) {
+    console.error('❌ Error creando gráfico de valor:', error);
+  }
+
+  // 3. Gráfico de modalidades (dona)
+  try {
+    const ctxModalidades = document.getElementById('modalidadesChart').getContext('2d');
+    new Chart(ctxModalidades, {
+      type: 'doughnut',
+      data: {
+        labels: modalidades_labels,
+        datasets: [{
+          data: modalidades_data,
+          backgroundColor: [
+            '#007bff', '#0056b3', '#003d82', 
+            '#002952', '#001a3a', '#001122'
+          ],
+          borderWidth: 2,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          ...commonOptions.plugins,
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              usePointStyle: true
+            }
+          },
+          title: {
+            display: true,
+            text: 'Distribución por Modalidad'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.raw / total) * 100).toFixed(1);
+                return context.label + ': ' + context.raw + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+    console.log('✅ Gráfico de modalidades creado');
+  } catch (error) {
+    console.error('❌ Error creando gráfico de modalidades:', error);
+  }
+
+  // 4. Gráfico de tipos de contrato
+  try {
+    const ctxTipos = document.getElementById('tiposChart').getContext('2d');
+    new Chart(ctxTipos, {
+      type: 'bar',
+      data: {
+        labels: tipos_labels,
+        datasets: [{
+          label: 'Cantidad de Contratos',
+          data: tipos_data,
+          backgroundColor: [
+            '#fd7e14', '#e8590c', '#d44100', 
+            '#bf3900', '#aa3200', '#952b00',
+            '#7d1f00', '#681800', '#531200'
+          ],
+          borderColor: [
+            '#fd7e14', '#e8590c', '#d44100', 
+            '#bf3900', '#aa3200', '#952b00',
+            '#7d1f00', '#681800', '#531200'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          },
+          x: {
+            ticks: { maxRotation: 45, minRotation: 45 }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Distribución por Tipo de Contrato'
+          }
+        }
+      }
+    });
+    console.log('✅ Gráfico de tipos de contrato creado');
+  } catch (error) {
+    console.error('❌ Error creando gráfico de tipos:', error);
+  }
+
+  // 5. Gráfico de departamentos (polar)
+  try {
+    const ctxDepartamentos = document.getElementById('departamentosChart').getContext('2d');
+    new Chart(ctxDepartamentos, {
+      type: 'polarArea',
+      data: {
+        labels: departamentos_labels,
+        datasets: [{
+          data: departamentos_data,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 205, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)',
+            'rgba(199, 199, 199, 0.7)',
+            'rgba(83, 102, 255, 0.7)'
+          ],
+          borderColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)',
+            'rgb(153, 102, 255)',
+            'rgb(255, 159, 64)',
+            'rgb(199, 199, 199)',
+            'rgb(83, 102, 255)'
+          ],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          r: {
+            beginAtZero: true,
+            ticks: { stepSize: 5 }
+          }
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          title: {
+            display: true,
+            text: 'Contratos por Departamento/Secretaría'
+          }
+        }
+      }
+    });
+    console.log('✅ Gráfico de departamentos creado');
+  } catch (error) {
+    console.error('❌ Error creando gráfico de departamentos:', error);
+  }
+
+  console.log('🎉 Todos los gráficos han sido procesados');
+});
+</script>
 {% endblock %}
