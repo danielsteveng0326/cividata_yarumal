@@ -13,9 +13,9 @@ from django.urls import reverse
 def login_view(request):
     """Vista de login con diseño AdminLTE"""
     
-    # Si el usuario ya está autenticado, redirigir al dashboard
+    # Si el usuario ya está autenticado, redirigir directamente al index de contratación
     if request.user.is_authenticated:
-        return redirect('dashboard:index')
+        return redirect('/contratacion/index/')  # ← CAMBIO AQUÍ
     
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -48,6 +48,7 @@ def logout_view(request):
 
 def check_auth_status(request):
     """Vista para verificar estado de autenticación via AJAX"""
+    from django.http import JsonResponse
     return JsonResponse({
         'authenticated': request.user.is_authenticated,
         'username': request.user.username if request.user.is_authenticated else None
