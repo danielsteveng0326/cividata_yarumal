@@ -5,7 +5,7 @@ from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import timedelta, datetime, date
 from .models import Contrato
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, Value, DateField
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.http import JsonResponse, HttpResponse
 from .db import process_api_data
@@ -296,9 +296,14 @@ class ContratoListView(ListView):
                 Q(nombre_ordenador_del_gasto__icontains=busqueda_filtro)
             )
         
-        # Ordenar por fecha de firma descendente, manejando valores nulos
+        # CORREGIR LA ORDENACIÓN: Usar date.min en lugar de datetime.min
+        # y especificar explícitamente el output_field
         return queryset.annotate(
-            fecha_orden=Coalesce('fecha_de_firma', Value(datetime.min))
+            fecha_orden=Coalesce(
+                'fecha_de_firma', 
+                Value(date.min),  # ← Usar date.min en lugar de datetime.min
+                output_field=DateField()  # ← Especificar explícitamente el tipo de campo
+            )
         ).order_by('-fecha_orden')
 
     def get_context_data(self, **kwargs):
