@@ -21,13 +21,13 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.railway.app',
     '.up.railway.app',
-    'yarumal.terrigov.co',  # Tu dominio personalizado
-    '.terrigov.co',         # Wildcard para subdominios
+    'yarumal.cividata.co',  # Tu dominio personalizado
+    '.cividata.co',         # Wildcard para subdominios
 ]
 
 # CSRF para producción
 CSRF_TRUSTED_ORIGINS = [
-    'https://yarumal.terrigov.co',
+    'https://yarumal.cividata.co',
     'https://*.railway.app',
     'https://*.up.railway.app',
 ]
