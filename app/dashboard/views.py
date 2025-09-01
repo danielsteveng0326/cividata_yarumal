@@ -4,12 +4,12 @@ from django.views.generic import ListView
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import timedelta, datetime, date
-from .models import Contrato
+from .models import Contrato, ContratoInteradministrativo
 from django.db.models import Sum, Count, Q, Value, DateField
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.http import JsonResponse, HttpResponse
-from .db import process_api_data
-from .utils import api_consulta
+from .db import process_api_data, process_interadmin_api_data
+from .utils import api_consulta, api_consulta_interadministrativos
 from django.db.models.functions import Coalesce
 from django.db.models import Value
 import json
@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required
 
 #poner el id de la entidad
 #edenorte = 727001372   #nit = 901831522
-#municipio de yarumal = 704278142
+#municipio de yarumal = 704278142 #nit = 890980096
 #concejo de yarumal = 724167465
 
 codigo_ent = 704278142
@@ -223,6 +223,18 @@ def expirededur(request):
     
     return render(request, 'table_expedur.html', {"expired_contract2": expired_contract2})
 
+def expiredinteradmin(request):
+    """Vista actualizada para mostrar contratos interadministrativos"""
+    fecha_actual = date.today() - timedelta(days=2)
+    
+    # Cambiar a usar el modelo ContratoInteradministrativo
+    expired_contract3 = ContratoInteradministrativo.objects.filter(
+        fecha_fin_ejecuci_n__gte=fecha_actual,
+        documento_proveedor='890980096'
+    ).order_by('fecha_fin_ejecuci_n')
+    
+    return render(request, 'table_expinteradmin.html', {"expired_contract3": expired_contract3})
+
 @login_required
 def api(request):
     """Vista corregida para procesar datos de la API"""
@@ -281,6 +293,68 @@ def api(request):
             "error": f"Error interno del servidor: {str(e)}",
             "success": False
         })
+
+@login_required
+def api_interadministrativos(request):
+    """Nueva vista para procesar datos de la API de interadministrativos"""
+    print("🚀 Iniciando proceso de consulta API interadministrativos...")
+    
+    try:
+        # Obtener datos de la API de interadministrativos
+        response = api_consulta_interadministrativos()
+        
+        if response['status'] == 'success':
+            print("✅ API de interadministrativos respondió exitosamente")
+            
+            # Convertir el JSON string a lista de diccionarios
+            contratos_data = json.loads(response['data'])
+            print(f"📊 Total de contratos interadministrativos recibidos: {len(contratos_data)}")
+            
+            # Procesar los datos de la API
+            nuevos, actualizados, errores = process_interadmin_api_data(contratos_data)
+            
+            print(f"📈 Resultados del procesamiento interadministrativos:")
+            print(f"   - Nuevos: {nuevos}")
+            print(f"   - Actualizados: {actualizados}")
+            print(f"   - Errores: {errores}")
+            
+            # Obtener la lista actualizada de contratos interadministrativos
+            list_interadmin = ContratoInteradministrativo.objects.filter(
+                documento_proveedor='890980096'
+            ).order_by('-fecha_de_firma_del_contrato')[:50]
+            
+            return render(request, 'api_interadmin.html', {
+                "list": list_interadmin,
+                "db_response": (nuevos, actualizados, errores),
+                "success": True,
+                "total_procesados": len(contratos_data),
+                "message": f"Procesamiento interadministrativos completado: {nuevos} nuevos, {actualizados} actualizados, {errores} errores"
+            })
+            
+        elif response['status'] == 'no_data':
+            print("⚠️ No se encontraron datos en la API de interadministrativos")
+            return render(request, 'api_interadmin.html', {
+                "error": "No se encontraron contratos interadministrativos nuevos en la API para el período consultado",
+                "success": False
+            })
+            
+        else:
+            print(f"❌ Error en API interadministrativos: {response.get('message')}")
+            return render(request, 'api_interadmin.html', {
+                "error": response['message'],
+                "success": False
+            })
+            
+    except Exception as e:
+        print(f"❌ Error crítico en vista API interadministrativos: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
+        return render(request, 'api_interadmin.html', {
+            "error": f"Error interno del servidor: {str(e)}",
+            "success": False
+        })
+
 
 @login_required
 def consulta(request):
@@ -368,3 +442,74 @@ class ContratoListView(ListView):
 @login_required
 def emilia(request):
     return render(request, '', {})
+
+
+
+class ContratoInteradministrativoListView(ListView):
+    model = ContratoInteradministrativo
+    template_name = 'table_expinteradmin.html'
+    context_object_name = 'contratos_interadmin'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_queryset(self):
+        # Obtener parámetros de filtro desde GET y POST
+        ano_filtro = self.request.GET.get('ano', '') or self.request.POST.get('ano', '')
+        municipio_filtro = self.request.GET.get('municipio', '') or self.request.POST.get('municipio', '')
+        busqueda_filtro = self.request.GET.get('busqueda', '') or self.request.POST.get('busqueda', '')
+        
+        # Query base - solo contratos interadministrativos del proveedor
+        queryset = ContratoInteradministrativo.objects.filter(documento_proveedor='890980096')
+        
+        # Aplicar filtro de año si se especifica
+        if ano_filtro:
+            try:
+                ano = int(ano_filtro)
+                queryset = queryset.filter(fecha_de_firma_del_contrato__year=ano)
+            except (ValueError, TypeError):
+                pass
+        
+        # Aplicar filtro de municipio si se especifica
+        if municipio_filtro:
+            queryset = queryset.filter(municipio_entidad__icontains=municipio_filtro)
+        
+        # Aplicar filtro de búsqueda si se especifica
+        if busqueda_filtro:
+            queryset = queryset.filter(
+                Q(numero_de_proceso__icontains=busqueda_filtro) |
+                Q(numero_del_contrato__icontains=busqueda_filtro) |
+                Q(nom_raz_social_contratista__icontains=busqueda_filtro) |
+                Q(objeto_a_contratar__icontains=busqueda_filtro) |
+                Q(municipio_entidad__icontains=busqueda_filtro)
+            )
+        
+        return queryset.order_by('-fecha_de_firma_del_contrato')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Obtener filtros aplicados para mostrarlos en el template
+        context['ano_filtro'] = self.request.GET.get('ano', '') or self.request.POST.get('ano', '')
+        context['municipio_filtro'] = self.request.GET.get('municipio', '') or self.request.POST.get('municipio', '')
+        context['busqueda_filtro'] = self.request.GET.get('busqueda', '') or self.request.POST.get('busqueda', '')
+        
+        # Obtener años disponibles para el filtro
+        anos_disponibles = ContratoInteradministrativo.objects.filter(
+            documento_proveedor='890980096',
+            fecha_de_firma_del_contrato__isnull=False
+        ).dates('fecha_de_firma_del_contrato', 'year', order='DESC')
+        context['anos_disponibles'] = [fecha.year for fecha in anos_disponibles]
+        
+        # Obtener municipios disponibles para el filtro
+        municipios_disponibles = ContratoInteradministrativo.objects.filter(
+            documento_proveedor='890980096',
+            municipio_entidad__isnull=False
+        ).exclude(municipio_entidad='').values_list('municipio_entidad', flat=True).distinct().order_by('municipio_entidad')
+        context['municipios_disponibles'] = list(municipios_disponibles)
+        
+        # Total de contratos
+        context['total_contratos'] = self.get_queryset().count()
+        
+        return context
